@@ -1,0 +1,21 @@
+header {
+  position: relative;
+  text-align: center;
+}
+
+#logout-btn {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+}
+
+#summary-info {
+  width: 20vw;
+  margin: 50px auto;
+  padding: 10px;
+  border: 2px solid;
+}
+
+#summary-options {
+  text-align: center;
+}

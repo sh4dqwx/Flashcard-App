@@ -12,8 +12,9 @@ header {
 #review-flashcard {
   display: flex;
   flex-direction: column;
-  margin: 50px 20vw;
+  margin: 50px auto;
   height: 70vh;
+  width: 60vw;
   align-items: center;
   justify-content: center;
   gap: 10px;

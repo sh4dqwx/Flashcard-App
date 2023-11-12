@@ -1,0 +1,65 @@
+header, #deck-name, #deck-container, #deck-options, .flashcard, .question, .answer {
+  display: flex;
+}
+
+header {
+  width: 99vw;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#deck-name, #deck-container {
+  margin: 10px;
+}
+
+#deck-name {
+  align-items: center;
+}
+
+#deck-container {
+  height: 75vh;
+}
+
+#flashcard-list {
+  flex: 3;
+  border-style: solid;
+  border-width: 2px;
+  overflow-y: auto;
+}
+
+#deck-options {
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#add-flashcard-btn {
+  margin-bottom: 30px;
+}
+
+.flashcard {
+  position: relative;
+  align-items: center;
+  margin: 10px;
+  background-color: gray;
+  height: 20%;
+}
+
+.question, .answer {
+  flex: 2;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.question {
+  border-right: 2px solid #000;
+}
+
+.delete-flashcard-btn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  height: 30px;
+}

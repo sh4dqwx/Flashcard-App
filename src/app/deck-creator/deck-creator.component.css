@@ -1,11 +1,22 @@
-header, #deck-name, #deck-container, #deck-options, .flashcard, .question, .answer {
+#deck-name, #deck-container, #deck-options, .flashcard, .question, .answer {
   display: flex;
 }
 
 header {
-  width: 99vw;
-  justify-content: space-between;
-  align-items: center;
+  position: relative;
+  text-align: center;
+}
+
+#back-btn {
+  position: absolute;
+  top: 0px;
+  left: 10px;
+}
+
+#logout-btn {
+  position: absolute;
+  top: 0px;
+  right: 10px;
 }
 
 #deck-name, #deck-container {
@@ -22,8 +33,7 @@ header {
 
 #flashcard-list {
   flex: 3;
-  border-style: solid;
-  border-width: 2px;
+  border: 2px solid;
   overflow-y: auto;
 }
 

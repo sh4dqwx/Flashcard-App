@@ -1,0 +1,27 @@
+header {
+  position: relative;
+  text-align: center;
+}
+
+#logout-btn {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+}
+
+#review-flashcard {
+  display: flex;
+  flex-direction: column;
+  margin: 50px 20vw;
+  height: 70vh;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2px solid;
+}
+
+#review-options {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}

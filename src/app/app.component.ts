@@ -4,6 +4,9 @@ import { RouterOutlet } from '@angular/router';
 import { DeckCreatorComponent } from './deck-creator/deck-creator.component';
 import { ReviewComponent } from './review/review.component';
 import { SummaryComponent } from './summary/summary.component';
+import { LoginComponent } from './login/login.component';
+import { TestComponent } from './test/test.component';
+import { SearchComponent } from './search/search.component';
 
 @Component({
   selector: 'app-root',
@@ -13,7 +16,10 @@ import { SummaryComponent } from './summary/summary.component';
     RouterOutlet,
     DeckCreatorComponent,
     ReviewComponent,
-    SummaryComponent
+    SummaryComponent,
+    LoginComponent,
+    TestComponent,
+    SearchComponent
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

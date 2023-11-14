@@ -1,0 +1,55 @@
+#deck-container,
+#deck-options,
+.flashcard {
+    display: flex;
+}
+
+header {
+    position: relative;
+    text-align: center;
+}
+
+#back-btn {
+    position: absolute;
+    top: 0px;
+    left: 10px;
+}
+
+#logout-btn {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+}
+
+#deck-container {
+    margin: 10px;
+}
+
+#deck-container {
+    height: 75vh;
+}
+
+#flashcard-list {
+    flex: 3;
+    border: 2px solid;
+    overflow-y: auto;
+}
+
+#deck-options {
+    position: relative;
+    text-align: center;
+}
+
+.flashcard {
+    position: relative;
+    align-items: center;
+    margin: 10px;
+    background-color: gray;
+    height: 20%;
+}
+
+.delete-flashcard-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}

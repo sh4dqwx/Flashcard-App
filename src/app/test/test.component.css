@@ -1,0 +1,29 @@
+header {
+    position: relative;
+    text-align: center;
+}
+
+#logout-btn {
+    position: absolute;
+    top: 0px;
+    right: 10px;
+}
+
+#test-flashcard {
+    display: flex;
+    flex-direction: column;
+    margin: 50px auto;
+    height: 40vh;
+    width: 60vw;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 2px solid;
+}
+
+#options-row {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    padding: 10px;
+}

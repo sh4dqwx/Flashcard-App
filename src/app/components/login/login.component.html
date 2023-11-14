@@ -1,0 +1,16 @@
+<div>
+    <header>
+        <h1>Logowanie</h1>
+    </header>
+    <form id="login-box" [formGroup]="loginGroup" (ngSubmit)="login($event)">
+        <div>
+            <label id="login">Login</label>
+            <input type="text" id="login" formControlName="loginField" required />
+        </div>
+        <div>
+            <label id="password">Hasło</label>
+            <input type="password" id="password" formControlName="passwordField" required />
+        </div>
+        <button id="login-btn" [disabled]="!loginGroup.valid || isLogging">Zaloguj</button>
+    </form>
+</div>

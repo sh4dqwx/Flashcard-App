@@ -5,7 +5,7 @@ import { DeckCreatorComponent } from './components/deck-creator/deck-creator.com
 import { ReviewComponent } from './components/review/review.component';
 import { TestComponent } from './components/test/test.component';
 import { SummaryComponent } from './components/summary/summary.component';
-import { ErrorComponent } from './error/error.component';
+import { ErrorComponent } from './components/error/error.component';
 
 export const routes: Routes = [
     { path: "", redirectTo: "/login", pathMatch: "full" },

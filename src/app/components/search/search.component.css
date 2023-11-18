@@ -1,6 +1,5 @@
-#deck-container,
 #deck-options,
-.flashcard {
+.deck {
     display: flex;
 }
 
@@ -22,34 +21,37 @@ header {
 }
 
 #deck-container {
+    height: 75vh;
     margin: 10px;
 }
 
-#deck-container {
-    height: 75vh;
-}
-
-#flashcard-list {
-    flex: 3;
+.deck-list {
+    height: 100%;
     border: 2px solid;
     overflow-y: auto;
 }
 
 #deck-options {
-    position: relative;
-    text-align: center;
+    justify-content: center;
 }
 
-.flashcard {
+.deck {
     position: relative;
     align-items: center;
     margin: 10px;
+    padding: 0px 10px;
     background-color: gray;
     height: 20%;
 }
 
-.delete-flashcard-btn {
+.delete-deck-btn {
     position: absolute;
     top: 15px;
+    right: 15px;
+}
+
+.is-deck-public {
+    position: absolute;
+    bottom: 15px;
     right: 15px;
 }

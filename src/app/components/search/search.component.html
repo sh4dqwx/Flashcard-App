@@ -6,26 +6,25 @@
     </header>
     <div id="deck-options">
         <input type="text" placeholder="Wyszukaj talie" />
-        <button id="add-flashcard-btn">Dodaj</button>
-        <button id="online-flashcard-btn">Online</button>
+        <button id="add-deck-btn">Dodaj</button>
+        <button id="online-decks-btn" (click)="showPrivateDecks = !showPrivateDecks">
+            <span *ngIf="showPrivateDecks">Online</span>
+            <span *ngIf="!showPrivateDecks">Prywatne</span>
+        </button>
     </div>
     <div id="deck-container">
-        <div id="flashcard-list">
-            <div class="flashcard">
-                <div class="name">[nazwa]</div>
-                <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon"></fa-icon>
+        <div *ngIf="showPrivateDecks" id="private-deck-list" class="deck-list">
+            <div *ngFor="let deck of privateDecks" class="deck">
+                <div class="name">{{ deck.name }}</div>
+                <fa-icon class="delete-deck-btn" [icon]="deleteIcon"></fa-icon>
+                <fa-icon *ngIf="deck.isPublic" class="is-deck-public" [icon]="publicIcon"></fa-icon>
             </div>
-            <div class="flashcard">
-                <div class="name">[nazwa]</div>
-                <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon"></fa-icon>
-            </div>
-            <div class="flashcard">
-                <div class="name">[nazwa]</div>
-                <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon"></fa-icon>
-            </div>
-            <div class="flashcard">
-                <div class="name">[nazwa]</div>
-                <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon"></fa-icon>
+        </div>
+        <div *ngIf="!showPrivateDecks" id="online-deck-list" class="deck-list">
+            <div *ngFor="let deck of onlineDecks" class="deck">
+                <div class="name">{{ deck.name }}</div>
+                <fa-icon class="delete-deck-btn" [icon]="deleteIcon"></fa-icon>
+                <fa-icon *ngIf="deck.isPublic" class="is-deck-public" [icon]="publicIcon"></fa-icon>
             </div>
         </div>
     </div>

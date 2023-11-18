@@ -1,7 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faCloud, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { Deck } from '../../classes/Deck';
+import { DeckRepositoryService } from '../../services/deck-repository/deck-repository.service';
 
 @Component({
   selector: 'app-search',
@@ -13,7 +15,30 @@ import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
 })
-export class SearchComponent {
-  editIcon = faPen
-  deleteIcon = faTrash
+export class SearchComponent implements OnInit {
+  editIcon!: IconDefinition
+  deleteIcon!: IconDefinition
+  publicIcon!: IconDefinition
+  privateDecks!: Deck[]
+  onlineDecks!: Deck[]
+  showPrivateDecks!: boolean
+
+  constructor(private deckRepository: DeckRepositoryService) { }
+
+  ngOnInit(): void {
+    this.editIcon = faPen
+    this.deleteIcon = faTrash
+    this.publicIcon = faCloud
+    this.getPrivateDecks()
+    this.getOnlineDecks()
+    this.showPrivateDecks = true
+  }
+
+  getPrivateDecks(): void {
+    this.privateDecks = this.deckRepository.getUserDecks()
+  }
+
+  getOnlineDecks(): void {
+    this.onlineDecks = this.deckRepository.getOnlineDecks()
+  }
 }

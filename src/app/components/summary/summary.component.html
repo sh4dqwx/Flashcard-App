@@ -1,13 +1,13 @@
 <div>
   <header>
     <h1>Podsumowanie [powtórki/testu]</h1>
-    <button id="logout-btn">Wyloguj</button>
+    <button id="logout-btn" (click)="logout()">Wyloguj</button>
   </header>
   <div id="summary-info">
     <p><b>Wynik:</b> [ilość poprawnych]/[ilość wszystkich]</p>
     <p><b>Czas:</b> [czas ukończenia testu]</p>
   </div>
   <div id="summary-options">
-    <button>Powrót</button>
+    <button [routerLink]="['/deck-creator']">Powrót</button>
   </div>
 </div>

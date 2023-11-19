@@ -1,7 +1,7 @@
 <div>
     <header>
         <h1>Test</h1>
-        <button id="logout-btn">Wyloguj</button>
+        <button id="logout-btn" (click)="logout()">Wyloguj</button>
     </header>
     <div id="test-flashcard">
         <h2>[pytanie]</h2>
@@ -9,12 +9,12 @@
     </div>
     <div>
         <div id="options-row">
-            <button>a: ...</button>
-            <button>b: ...</button>
+            <button (click)="next(0)">a: ...</button>
+            <button (click)="next(1)">b: ...</button>
         </div>
         <div id="options-row">
-            <button>c: ...</button>
-            <button>d: ...</button>
+            <button (click)="next(2)">c: ...</button>
+            <button (click)="next(3)">d: ...</button>
         </div>
     </div>
 </div>

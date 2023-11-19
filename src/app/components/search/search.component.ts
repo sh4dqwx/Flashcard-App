@@ -5,20 +5,22 @@ import { IconDefinition, faCloud, faPen, faTrash } from '@fortawesome/free-solid
 import { Deck } from '../../classes/Deck';
 import { DeckRepositoryService } from '../../services/deck-repository/deck-repository.service';
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-search',
   standalone: true,
   imports: [
     CommonModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    RouterModule
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
 })
 export class SearchComponent implements OnInit {
   private deckRepository!: IDeckRepository
-  
+
   editIcon!: IconDefinition
   deleteIcon!: IconDefinition
   publicIcon!: IconDefinition
@@ -26,7 +28,7 @@ export class SearchComponent implements OnInit {
   onlineDecks!: Deck[]
   showPrivateDecks!: boolean
 
-  constructor(private injector: Injector) {
+  constructor(private injector: Injector, private router: Router) {
     this.deckRepository = this.injector.get<IDeckRepository>(DeckRepositoryService)
   }
 
@@ -49,5 +51,9 @@ export class SearchComponent implements OnInit {
 
   private async getOnlineDecks(): Promise<void> {
     this.onlineDecks = await this.deckRepository.getOnlineDecks()
+  }
+
+  public logout(): void {
+    this.router.navigate(['/login']);
   }
 }

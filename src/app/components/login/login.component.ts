@@ -4,6 +4,8 @@ import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CurrentStateService } from '../../services/current-state/current-state.service';
 import { User } from '../../classes/User';
+import { UserRepositoryService } from '../../services/user-repository/user-repository.service';
+import { IUserRepository } from '../../interfaces/IUserRepository';
 
 @Component({
   selector: 'app-login',
@@ -16,9 +18,11 @@ import { User } from '../../classes/User';
   styleUrl: './login.component.css'
 })
 export class LoginComponent implements OnInit {
+  userRepository!: IUserRepository
+  applicationState!: CurrentStateService
+
   loginGroup!: FormGroup
   isLogging!: boolean
-  applicationState!: CurrentStateService
 
   ngOnInit(): void {
     this.loginGroup = this.formBuilder.group({
@@ -33,10 +37,11 @@ export class LoginComponent implements OnInit {
     private router: Router,
     private injector: Injector
   ) {
+    this.userRepository = this.injector.get<IUserRepository>(UserRepositoryService);
     this.applicationState = this.injector.get(CurrentStateService);
   }
 
-  login(event: any): void {
+  async login(event: any): Promise<void> {
     this.isLogging = true;
     event.preventDefault();
     const login = this.loginGroup.get("loginField");
@@ -45,12 +50,22 @@ export class LoginComponent implements OnInit {
     console.log("login: " + login?.value);
     console.log("password: " + password?.value);
 
-    if (this.loginGroup.valid) {
-      this.applicationState.setCurrentUser({ id: 1, login: login?.value, password: password?.value })
-      this.router.navigate(['/search']);
-    } else {
+    if (!this.loginGroup.valid) {
+      this.isLogging = false;
       console.log("Invalid login or password");
+      return;
     }
+
+    const user = await this.userRepository.getUser(login?.value, password?.value);
+    console.log(user);
+    if (user == null) {
+      this.isLogging = false;
+      console.log("Invalid login or password");
+      return;
+    }
+
+    this.applicationState.setCurrentUser(user);
     this.isLogging = false;
+    this.router.navigate(['/search']);
   }
 }

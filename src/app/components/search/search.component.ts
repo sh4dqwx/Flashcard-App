@@ -31,7 +31,7 @@ export class SearchComponent implements OnInit {
   showPrivateDecks!: boolean
 
   constructor(private injector: Injector, private router: Router) {
-    this.deckRepository = this.injector.get<IDeckRepository>(DeckRepositoryService)
+    this.deckRepository = this.injector.get<IDeckRepository>(DeckRepositoryService);
     this.applicationState = this.injector.get(CurrentStateService);
   }
 

@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Injector, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CurrentStateService } from '../../services/current-state/current-state.service';
+import { User } from '../../classes/User';
 
 @Component({
   selector: 'app-login',
@@ -16,6 +18,7 @@ import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angula
 export class LoginComponent implements OnInit {
   loginGroup!: FormGroup
   isLogging!: boolean
+  applicationState!: CurrentStateService
 
   ngOnInit(): void {
     this.loginGroup = this.formBuilder.group({
@@ -27,8 +30,11 @@ export class LoginComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private router: Router
-  ) { }
+    private router: Router,
+    private injector: Injector
+  ) {
+    this.applicationState = this.injector.get(CurrentStateService);
+  }
 
   login(event: any): void {
     this.isLogging = true;
@@ -40,6 +46,7 @@ export class LoginComponent implements OnInit {
     console.log("password: " + password?.value);
 
     if (this.loginGroup.valid) {
+      this.applicationState.setCurrentUser({ id: 1, login: login?.value, password: password?.value })
       this.router.navigate(['/search']);
     } else {
       console.log("Invalid login or password");

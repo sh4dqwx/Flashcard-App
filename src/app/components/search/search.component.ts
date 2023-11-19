@@ -6,6 +6,7 @@ import { Deck } from '../../classes/Deck';
 import { DeckRepositoryService } from '../../services/deck-repository/deck-repository.service';
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
 import { RouterModule, Router } from '@angular/router';
+import { CurrentStateService } from '../../services/current-state/current-state.service';
 
 @Component({
   selector: 'app-search',
@@ -20,6 +21,7 @@ import { RouterModule, Router } from '@angular/router';
 })
 export class SearchComponent implements OnInit {
   private deckRepository!: IDeckRepository
+  private applicationState!: CurrentStateService
 
   editIcon!: IconDefinition
   deleteIcon!: IconDefinition
@@ -30,6 +32,7 @@ export class SearchComponent implements OnInit {
 
   constructor(private injector: Injector, private router: Router) {
     this.deckRepository = this.injector.get<IDeckRepository>(DeckRepositoryService)
+    this.applicationState = this.injector.get(CurrentStateService);
   }
 
   async ngOnInit(): Promise<void> {
@@ -54,6 +57,7 @@ export class SearchComponent implements OnInit {
   }
 
   public logout(): void {
+    this.applicationState.removeCurrentUser();
     this.router.navigate(['/login']);
   }
 }

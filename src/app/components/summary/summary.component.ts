@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
+import { CurrentStateService } from '../../services/current-state/current-state.service';
 
 @Component({
   selector: 'app-summary',
@@ -10,9 +11,17 @@ import { RouterModule, Router } from '@angular/router';
   styleUrl: './summary.component.css'
 })
 export class SummaryComponent {
-  constructor(private router: Router) { }
+  applicationState!: CurrentStateService
+
+  constructor(
+    private router: Router,
+    private injector: Injector
+  ) {
+    this.applicationState = this.injector.get(CurrentStateService);
+  }
 
   public logout(): void {
+    this.applicationState.removeCurrentUser();
     this.router.navigate(['/login']);
   }
 }

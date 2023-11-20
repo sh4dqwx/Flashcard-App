@@ -8,6 +8,8 @@ import { IDeckRepository } from '../../interfaces/IDeckRepository';
 import { RouterModule, Router } from '@angular/router';
 import { CurrentStateService } from '../../services/current-state/current-state.service';
 import { User } from '../../classes/User';
+import { MatDialog } from '@angular/material/dialog';
+import { DeckFormComponent } from '../../modules/deck-form/deck-form.component';
 
 @Component({
   selector: 'app-search',
@@ -36,7 +38,7 @@ export class SearchComponent implements OnInit {
   @ViewChild('searchInput')
   searchInput!: ElementRef;
 
-  constructor(private injector: Injector, private router: Router) {
+  constructor(private injector: Injector, private router: Router, private dialog: MatDialog) {
     this.deckRepository = this.injector.get<IDeckRepository>(DeckRepositoryService);
     this.applicationState = this.injector.get(CurrentStateService);
   }
@@ -86,6 +88,22 @@ export class SearchComponent implements OnInit {
       this.filteredOnlineDecks = this.onlineDecks.filter(deck =>
         deck.name.toLowerCase().includes(event.target.value.toLowerCase())
       );
+  }
+
+  public addDeck(): void {
+    const dialogRef = this.dialog.open(DeckFormComponent);
+    dialogRef.afterClosed().subscribe(async result => {
+      if (!result)
+        return;
+
+      const user: User | null = this.applicationState.getCurrentUser();
+      if (user == null)
+        return this.logout();
+
+      const deck: Deck = { id: 0, author: user, name: result, isPublic: false };
+      await this.deckRepository.addDeck(deck);
+      await this.getPrivateDecks();
+    });
   }
 
   public logout(): void {

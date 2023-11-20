@@ -5,7 +5,7 @@
     </header>
     <div id="deck-options">
         <input type="text" placeholder="Wyszukaj talie" #searchInput (input)="filterDecks($event)" />
-        <button id="add-deck-btn" [routerLink]="['/deck-creator']">Dodaj</button>
+        <button id="add-deck-btn" (click)="addDeck()">Dodaj</button>
         <button id="online-decks-btn" (click)="onlineToggle()">
             <span *ngIf="showPrivateDecks">Online</span>
             <span *ngIf="!showPrivateDecks">Prywatne</span>

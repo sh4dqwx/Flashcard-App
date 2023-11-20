@@ -7,6 +7,7 @@ import { SummaryComponent } from './components/summary/summary.component';
 import { LoginComponent } from './components/login/login.component';
 import { TestComponent } from './components/test/test.component';
 import { SearchComponent } from './components/search/search.component';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-root',
@@ -19,7 +20,8 @@ import { SearchComponent } from './components/search/search.component';
     SummaryComponent,
     LoginComponent,
     TestComponent,
-    SearchComponent
+    SearchComponent,
+    MatDialogModule
   ],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']

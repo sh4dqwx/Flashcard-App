@@ -1,12 +1,11 @@
 <div>
     <header>
         <h1>Wyszukiwarka talii</h1>
-        <button id="back-btn">Powrót</button>
-        <button id="logout-btn">Wyloguj</button>
+        <button id="logout-btn" (click)="logout()">Wyloguj</button>
     </header>
     <div id="deck-options">
         <input type="text" placeholder="Wyszukaj talie" />
-        <button id="add-deck-btn">Dodaj</button>
+        <button id="add-deck-btn" [routerLink]="['/deck-creator']">Dodaj</button>
         <button id="online-decks-btn" (click)="showPrivateDecks = !showPrivateDecks">
             <span *ngIf="showPrivateDecks">Online</span>
             <span *ngIf="!showPrivateDecks">Prywatne</span>

@@ -1,14 +1,14 @@
 <div>
   <header>
     <h1>Powtórka</h1>
-    <button id="logout-btn">Wyloguj</button>
+    <button id="logout-btn" (click)="logout()">Wyloguj</button>
   </header>
   <div id="review-flashcard">
     <h2>[pytanie]</h2>
     <span>[nr fiszki]/[ilość fiszek]</span>
   </div>
   <div id="review-options">
-    <button>Łatwe</button>
-    <button>Trudne</button>
+    <button (click)="next(0)">Łatwe</button>
+    <button (click)="next(1)">Trudne</button>
   </div>
 </div>

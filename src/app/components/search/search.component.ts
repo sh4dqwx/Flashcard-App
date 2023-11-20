@@ -5,20 +5,24 @@ import { IconDefinition, faCloud, faPen, faTrash } from '@fortawesome/free-solid
 import { Deck } from '../../classes/Deck';
 import { DeckRepositoryService } from '../../services/deck-repository/deck-repository.service';
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
+import { RouterModule, Router } from '@angular/router';
+import { CurrentStateService } from '../../services/current-state/current-state.service';
 
 @Component({
   selector: 'app-search',
   standalone: true,
   imports: [
     CommonModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    RouterModule
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
 })
 export class SearchComponent implements OnInit {
   private deckRepository!: IDeckRepository
-  
+  private applicationState!: CurrentStateService
+
   editIcon!: IconDefinition
   deleteIcon!: IconDefinition
   publicIcon!: IconDefinition
@@ -26,8 +30,9 @@ export class SearchComponent implements OnInit {
   onlineDecks!: Deck[]
   showPrivateDecks!: boolean
 
-  constructor(private injector: Injector) {
-    this.deckRepository = this.injector.get<IDeckRepository>(DeckRepositoryService)
+  constructor(private injector: Injector, private router: Router) {
+    this.deckRepository = this.injector.get<IDeckRepository>(DeckRepositoryService);
+    this.applicationState = this.injector.get(CurrentStateService);
   }
 
   async ngOnInit(): Promise<void> {
@@ -49,5 +54,10 @@ export class SearchComponent implements OnInit {
 
   private async getOnlineDecks(): Promise<void> {
     this.onlineDecks = await this.deckRepository.getOnlineDecks()
+  }
+
+  public logout(): void {
+    this.applicationState.removeCurrentUser();
+    this.router.navigate(['/login']);
   }
 }

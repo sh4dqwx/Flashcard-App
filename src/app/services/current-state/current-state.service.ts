@@ -5,7 +5,7 @@ import { User } from '../../classes/User';
   providedIn: 'root'
 })
 export class CurrentStateService {
-  currentUser: User | null;
+  private currentUser: User | null;
 
   constructor() {
     this.currentUser = null;

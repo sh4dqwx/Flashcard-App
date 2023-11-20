@@ -7,6 +7,7 @@ import { DeckRepositoryService } from '../../services/deck-repository/deck-repos
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
 import { RouterModule, Router } from '@angular/router';
 import { CurrentStateService } from '../../services/current-state/current-state.service';
+import { User } from '../../classes/User';
 
 @Component({
   selector: 'app-search',
@@ -36,6 +37,9 @@ export class SearchComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    if (this.applicationState.getCurrentUser === null)
+      return this.logout()
+
     this.editIcon = faPen
     this.deleteIcon = faTrash
     this.publicIcon = faCloud
@@ -48,12 +52,15 @@ export class SearchComponent implements OnInit {
   }
 
   private async getPrivateDecks(): Promise<void> {
-    //tu zmienić, wziąć skądś aktualnie zalogowanego użytkownika
-    this.privateDecks = await this.deckRepository.getPrivateDecks(1)
+    const user: User | null = this.applicationState.getCurrentUser();
+    if (user == null)
+      return this.logout();
+
+    this.privateDecks = await this.deckRepository.getPrivateDecks(user);
   }
 
   private async getOnlineDecks(): Promise<void> {
-    this.onlineDecks = await this.deckRepository.getOnlineDecks()
+    this.onlineDecks = await this.deckRepository.getOnlineDecks();
   }
 
   public logout(): void {

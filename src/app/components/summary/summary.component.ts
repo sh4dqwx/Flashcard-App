@@ -1,4 +1,4 @@
-import { Component, Injector } from '@angular/core';
+import { Component, Injector, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { CurrentStateService } from '../../services/current-state/current-state.service';
@@ -10,7 +10,7 @@ import { CurrentStateService } from '../../services/current-state/current-state.
   templateUrl: './summary.component.html',
   styleUrl: './summary.component.css'
 })
-export class SummaryComponent {
+export class SummaryComponent implements OnInit {
   applicationState!: CurrentStateService
 
   constructor(
@@ -18,6 +18,11 @@ export class SummaryComponent {
     private injector: Injector
   ) {
     this.applicationState = this.injector.get(CurrentStateService);
+  }
+
+  ngOnInit(): void {
+    if (this.applicationState.getCurrentUser === null)
+      return this.logout()
   }
 
   public logout(): void {

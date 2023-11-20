@@ -42,8 +42,8 @@ export class LoginComponent implements OnInit {
   }
 
   async login(event: any): Promise<void> {
-    this.isLogging = true;
     event.preventDefault();
+    this.isLogging = true;
     const login = this.loginGroup.get("loginField");
     const password = this.loginGroup.get("passwordField");
 

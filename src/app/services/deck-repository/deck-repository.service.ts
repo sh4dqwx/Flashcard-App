@@ -1,6 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import { Deck } from '../../classes/Deck';
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
+import { User } from '../../classes/User';
 
 @Injectable({
   providedIn: 'root'
@@ -31,9 +32,9 @@ export class DeckRepositoryService implements IDeckRepository {
       id: 3,
       name: "Hiszpański",
       author: {
-        id: 1,
-        login: "admin",
-        password: "admin"
+        id: 2,
+        login: "user",
+        password: "user"
       },
       isPublic: false
     },
@@ -41,11 +42,11 @@ export class DeckRepositoryService implements IDeckRepository {
 
   constructor() { }
 
-  async getPrivateDecks(userId: number): Promise<Deck[]> {
-    return this.decks.filter((deck: Deck) => deck.author.id == userId)
+  async getPrivateDecks(user: User): Promise<Deck[]> {
+    return this.decks.filter((deck: Deck) => deck.author.id === user.id);
   }
 
   async getOnlineDecks(): Promise<Deck[]> {
-    return this.decks.filter((deck: Deck) => deck.isPublic == true)
+    return this.decks.filter((deck: Deck) => deck.isPublic === true);
   }
 }

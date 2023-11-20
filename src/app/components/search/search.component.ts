@@ -106,6 +106,10 @@ export class SearchComponent implements OnInit {
     });
   }
 
+  public editDeck(deck: Deck): void {
+    this.router.navigate(['/deck']); //podać id talii
+  }
+
   public logout(): void {
     this.applicationState.removeCurrentUser();
     this.router.navigate(['/login']);

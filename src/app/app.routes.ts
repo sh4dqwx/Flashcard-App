@@ -11,9 +11,10 @@ export const routes: Routes = [
     { path: "", redirectTo: "/login", pathMatch: "full" },
     { path: "login", component: LoginComponent },
     { path: "search", component: SearchComponent },
-    { path: "deck-creator", component: DeckCreatorComponent },
+    { path: "deck/:deckId", component: DeckCreatorComponent },
     { path: "review", component: ReviewComponent },
     { path: "test", component: TestComponent },
     { path: "summary", component: SummaryComponent },
-    { path: "**", component: ErrorComponent}
+    { path: "error", component: ErrorComponent},
+    { path: "**", redirectTo: "/error", pathMatch: "full" }
 ];

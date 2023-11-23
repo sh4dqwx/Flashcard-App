@@ -50,6 +50,10 @@ export class DeckRepositoryService implements IDeckRepository {
     return this.decks.filter((deck: Deck) => deck.isPublic === true);
   }
 
+  async getDeck(id: number): Promise<Deck | undefined> {
+    return this.decks.find((deck: Deck) => deck.id == id)
+  }
+
   async addDeck(deck: Deck): Promise<void> {
     deck.id = this.decks[this.decks.length - 1].id + 1;
     this.decks.push(deck);

@@ -1,4 +1,4 @@
-import { Component, Injector, OnInit } from '@angular/core';
+import { Component, ElementRef, Injector, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faCloud, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -8,6 +8,8 @@ import { IDeckRepository } from '../../interfaces/IDeckRepository';
 import { RouterModule, Router } from '@angular/router';
 import { CurrentStateService } from '../../services/current-state/current-state.service';
 import { User } from '../../classes/User';
+import { MatDialog } from '@angular/material/dialog';
+import { DeckFormComponent } from '../../modules/deck-form/deck-form.component';
 
 @Component({
   selector: 'app-search',
@@ -29,9 +31,14 @@ export class SearchComponent implements OnInit {
   publicIcon!: IconDefinition
   privateDecks!: Deck[]
   onlineDecks!: Deck[]
+  filteredPrivateDecks!: Deck[]
+  filteredOnlineDecks!: Deck[]
   showPrivateDecks!: boolean
 
-  constructor(private injector: Injector, private router: Router) {
+  @ViewChild('searchInput')
+  searchInput!: ElementRef;
+
+  constructor(private injector: Injector, private router: Router, private dialog: MatDialog) {
     this.deckRepository = this.injector.get<IDeckRepository>(DeckRepositoryService);
     this.applicationState = this.injector.get(CurrentStateService);
   }
@@ -57,10 +64,50 @@ export class SearchComponent implements OnInit {
       return this.logout();
 
     this.privateDecks = await this.deckRepository.getPrivateDecks(user);
+    this.filteredPrivateDecks = this.privateDecks; //.map(deck => deck);
   }
 
   private async getOnlineDecks(): Promise<void> {
     this.onlineDecks = await this.deckRepository.getOnlineDecks();
+    this.filteredOnlineDecks = this.onlineDecks; //.map(deck => deck);
+  }
+
+  public onlineToggle(): void {
+    this.showPrivateDecks = !this.showPrivateDecks;
+    this.searchInput.nativeElement.value = '';
+    this.filteredPrivateDecks = this.privateDecks;
+    this.filteredOnlineDecks = this.onlineDecks;
+  }
+
+  public filterDecks(event: any): void {
+    if (this.showPrivateDecks)
+      this.filteredPrivateDecks = this.privateDecks.filter(deck =>
+        deck.name.toLowerCase().includes(event.target.value.toLowerCase())
+      );
+    else
+      this.filteredOnlineDecks = this.onlineDecks.filter(deck =>
+        deck.name.toLowerCase().includes(event.target.value.toLowerCase())
+      );
+  }
+
+  public addDeck(): void {
+    const dialogRef = this.dialog.open(DeckFormComponent);
+    dialogRef.afterClosed().subscribe(async result => {
+      if (!result)
+        return;
+
+      const user: User | null = this.applicationState.getCurrentUser();
+      if (user == null)
+        return this.logout();
+
+      const deck: Deck = { id: 0, author: user, name: result, isPublic: false };
+      await this.deckRepository.addDeck(deck);
+      await this.getPrivateDecks();
+    });
+  }
+
+  public editDeck(deck: Deck): void {
+    this.router.navigate(['/deck']); //podać id talii
   }
 
   public logout(): void {

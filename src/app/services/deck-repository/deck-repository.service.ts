@@ -49,4 +49,9 @@ export class DeckRepositoryService implements IDeckRepository {
   async getOnlineDecks(): Promise<Deck[]> {
     return this.decks.filter((deck: Deck) => deck.isPublic === true);
   }
+
+  async addDeck(deck: Deck): Promise<void> {
+    deck.id = this.decks[this.decks.length - 1].id + 1;
+    this.decks.push(deck);
+  }
 }

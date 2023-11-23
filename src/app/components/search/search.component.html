@@ -4,23 +4,23 @@
         <button id="logout-btn" (click)="logout()">Wyloguj</button>
     </header>
     <div id="deck-options">
-        <input type="text" placeholder="Wyszukaj talie" />
-        <button id="add-deck-btn" [routerLink]="['/deck-creator']">Dodaj</button>
-        <button id="online-decks-btn" (click)="showPrivateDecks = !showPrivateDecks">
+        <input type="text" placeholder="Wyszukaj talie" #searchInput (input)="filterDecks($event)" />
+        <button id="add-deck-btn" (click)="addDeck()">Dodaj</button>
+        <button id="online-decks-btn" (click)="onlineToggle()">
             <span *ngIf="showPrivateDecks">Online</span>
             <span *ngIf="!showPrivateDecks">Prywatne</span>
         </button>
     </div>
     <div id="deck-container">
         <div *ngIf="showPrivateDecks" id="private-deck-list" class="deck-list">
-            <div *ngFor="let deck of privateDecks" class="deck">
+            <div *ngFor="let deck of filteredPrivateDecks" class="deck" (click)="editDeck(deck)">
                 <div class="name">{{ deck.name }}</div>
                 <fa-icon class="delete-deck-btn" [icon]="deleteIcon"></fa-icon>
                 <fa-icon *ngIf="deck.isPublic" class="is-deck-public" [icon]="publicIcon"></fa-icon>
             </div>
         </div>
         <div *ngIf="!showPrivateDecks" id="online-deck-list" class="deck-list">
-            <div *ngFor="let deck of onlineDecks" class="deck">
+            <div *ngFor="let deck of filteredOnlineDecks" class="deck" (click)="editDeck(deck)">
                 <div class="name">{{ deck.name }}</div>
                 <fa-icon class="delete-deck-btn" [icon]="deleteIcon"></fa-icon>
                 <fa-icon *ngIf="deck.isPublic" class="is-deck-public" [icon]="publicIcon"></fa-icon>

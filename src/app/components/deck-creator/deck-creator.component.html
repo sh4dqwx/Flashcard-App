@@ -10,24 +10,9 @@
   </div>
   <div id="deck-container">
     <div id="flashcard-list">
-      <div class="flashcard">
-        <div class="question">[pytanie]</div>
-        <div class="answer">[odpowiedź]</div>
-        <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon"></fa-icon>
-      </div>
-      <div class="flashcard">
-        <div class="question">[pytanie]</div>
-        <div class="answer">[odpowiedź]</div>
-        <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon"></fa-icon>
-      </div>
-      <div class="flashcard">
-        <div class="question">[pytanie]</div>
-        <div class="answer">[odpowiedź]</div>
-        <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon"></fa-icon>
-      </div>
-      <div class="flashcard">
-        <div class="question">[pytanie]</div>
-        <div class="answer">[odpowiedź]</div>
+      <div *ngFor="let flashcard or deck.flashcards" class="flashcard">
+        <div class="question">{{ flashcard.question }}</div>
+        <div class="answer">{{ flashcard.answer }}</div>
         <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon"></fa-icon>
       </div>
     </div>

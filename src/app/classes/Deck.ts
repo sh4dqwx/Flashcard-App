@@ -1,9 +1,10 @@
+import { Flashcard } from "./Flashcard";
 import { User } from "./User";
 
 export type Deck = {
   id: number,
   name: string,
-  //flashcards: Flashcard[],
+  flashcards: Flashcard[],
   author: User,
   isPublic: boolean,
   //tests: Test[]

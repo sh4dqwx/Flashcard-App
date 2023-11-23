@@ -2,6 +2,7 @@ import { Injectable, OnInit } from '@angular/core';
 import { Deck } from '../../classes/Deck';
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
 import { User } from '../../classes/User';
+import { FlashcardAnswer, FlashcardTrueFalse } from '../../classes/Flashcard';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +12,13 @@ export class DeckRepositoryService implements IDeckRepository {
     {
       id: 1,
       name: "Angielski",
+      flashcards: [
+        new FlashcardAnswer(1, 'classroom', 'klasa'),
+        new FlashcardTrueFalse(2, 'Is the sky blue?', true),
+        new FlashcardAnswer(3, 'weather', 'pogoda'),
+        new FlashcardTrueFalse(4, 'Are elephants able to fly?', false),
+        new FlashcardAnswer(5, 'delicious', 'pyszny'),
+      ],
       author: {
         id: 1,
         login: "admin",
@@ -21,6 +29,13 @@ export class DeckRepositoryService implements IDeckRepository {
     {
       id: 2,
       name: "Niemiecki",
+      flashcards: [
+        new FlashcardAnswer(1, 'Haus', 'Dom'),
+        new FlashcardAnswer(2, 'Apfel', 'Jabłko'),
+        new FlashcardAnswer(3, 'Auto', 'Samochód'),
+        new FlashcardTrueFalse(4, 'Ist Berlin die Hauptstadt von Deutschland?', true),
+        new FlashcardTrueFalse(5, 'Ist Wasser eine feste Substanz?', false)
+      ],
       author: {
         id: 1,
         login: "admin",
@@ -31,6 +46,13 @@ export class DeckRepositoryService implements IDeckRepository {
     {
       id: 3,
       name: "Hiszpański",
+      flashcards: [
+        new FlashcardAnswer(1, 'Casa', 'Dom'),
+        new FlashcardAnswer(2, 'Manzana', 'Jabłko'),
+        new FlashcardAnswer(3, 'Coche', 'Samochód'),
+        new FlashcardTrueFalse(1, 'Es Madrid la capital de España?', true),
+        new FlashcardTrueFalse(2, 'El agua es una sustancia sólida?', false)
+      ],
       author: {
         id: 2,
         login: "user",

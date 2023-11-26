@@ -20,7 +20,7 @@
       <button id="add-flashcard-btn" (click)="addFlashcard()">Dodaj</button>
       <button [routerLink]="['/review']">Powtórka</button>
       <button [routerLink]="['/test']">Test</button>
-      <button (click)="deck.isPublic = true">Udostępnij</button>
+      <button (click)="deck.isPublic = !deck.isPublic">Udostępnij</button>
     </div>
   </div>
 </div>

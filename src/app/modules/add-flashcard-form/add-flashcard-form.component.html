@@ -1,0 +1,27 @@
+<h1 mat-dialog-title>Tworzenie fiszki</h1>
+<div mat-dialog-content [formGroup]="flashcardForm">
+  <mat-form-field>
+    <mat-label>Rodzaj:</mat-label>
+    <mat-select formControlName="type">
+      <mat-option value="answer">Odpowiedź</mat-option>
+      <mat-option value="trueFalse">Prawda/Fałsz</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field>
+    <label>Pytanie:</label> 
+    <input matInput formControlName="question" />
+  </mat-form-field>
+  <mat-form-field *ngIf="flashcardForm.get('type')?.value === 'answer'">
+    <label for="answerInput">Odpowiedź:</label>
+    <input matInput formControlName="answer" />
+  </mat-form-field>
+  <div *ngIf="flashcardForm.get('type')?.value === 'trueFalse'">
+    <label>Odpowiedź:</label>
+    <label><input type="radio" name="trueFalseAnswer" formControlName="trueFalseAnswer" [value]="true"> Prawda</label>
+    <label><input type="radio" name="trueFalseAnswer" formControlName="trueFalseAnswer" [value]="false"> Fałsz</label>
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close()">Anuluj</button>
+  <button mat-button (click)="addFlashcard()">Utwórz</button>
+</div>

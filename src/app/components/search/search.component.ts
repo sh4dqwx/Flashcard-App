@@ -44,7 +44,7 @@ export class SearchComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    if (this.applicationState.getCurrentUser === null)
+    if (this.applicationState.getCurrentUser() === null)
       return this.logout()
 
     this.editIcon = faPen
@@ -100,14 +100,20 @@ export class SearchComponent implements OnInit {
       if (user == null)
         return this.logout();
 
-      const deck: Deck = { id: 0, author: user, name: result, isPublic: false };
+      const deck: Deck = {
+        id: 0,
+        name: result,
+        flashcards: [],
+        author: user,
+        isPublic: false
+      };
       await this.deckRepository.addDeck(deck);
       await this.getPrivateDecks();
     });
   }
 
   public editDeck(deck: Deck): void {
-    this.router.navigate(['/deck']); //podać id talii
+    this.router.navigate(['/deck', deck.id]); //podać id talii
   }
 
   public logout(): void {

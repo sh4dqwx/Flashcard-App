@@ -2,7 +2,7 @@ import { Injectable, OnInit } from '@angular/core';
 import { Deck } from '../../classes/Deck';
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
 import { User } from '../../classes/User';
-import { FlashcardAnswer, FlashcardTrueFalse } from '../../classes/Flashcard';
+import { AddFlashcardDTO, Flashcard, FlashcardAnswer, FlashcardTrueFalse } from '../../classes/Flashcard';
 
 @Injectable({
   providedIn: 'root'
@@ -79,5 +79,20 @@ export class DeckRepositoryService implements IDeckRepository {
   async addDeck(deck: Deck): Promise<void> {
     deck.id = this.decks[this.decks.length - 1].id + 1;
     this.decks.push(deck);
+  }
+
+  async addFlashcard(addFlashcardDTO: AddFlashcardDTO, selectedDeck: Deck): Promise<void> {
+    let flashcard: Flashcard
+    const flashcardId = selectedDeck.flashcards[selectedDeck.flashcards.length - 1].id + 1
+
+    if(addFlashcardDTO.type === "answer")
+      flashcard = new FlashcardAnswer(flashcardId, addFlashcardDTO.question, addFlashcardDTO.answer)
+    else if(addFlashcardDTO.type === "trueFalse")
+      flashcard = new FlashcardTrueFalse(flashcardId, addFlashcardDTO.question, addFlashcardDTO.trueFalseAnswer)
+
+    this.decks = this.decks.map((deck: Deck) => {
+      if(deck.id === selectedDeck.id) return { ...deck, flashcards: [...deck.flashcards, flashcard] }
+      else return deck
+    })
   }
 }

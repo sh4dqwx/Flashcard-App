@@ -10,17 +10,17 @@
   </div>
   <div id="deck-container">
     <div id="flashcard-list">
-      <div *ngFor="let flashcard or deck.flashcards" class="flashcard">
+      <div *ngFor="let flashcard of deck.flashcards" class="flashcard">
         <div class="question">{{ flashcard.question }}</div>
-        <div class="answer">{{ flashcard.answer }}</div>
-        <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon"></fa-icon>
+        <div class="answer">{{ flashcard.getAnswer() }}</div>
+        <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon" (click)="deleteFlashcard(flashcard)"></fa-icon>
       </div>
     </div>
     <div id="deck-options">
-      <button id="add-flashcard-btn">Dodaj</button>
+      <button id="add-flashcard-btn" (click)="addFlashcard()">Dodaj</button>
       <button [routerLink]="['/review']">Powtórka</button>
       <button [routerLink]="['/test']">Test</button>
-      <button>Udostępnij</button>
+      <button (click)="deck.isPublic = true">Udostępnij</button>
     </div>
   </div>
 </div>

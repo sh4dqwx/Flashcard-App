@@ -1,5 +1,5 @@
 import { Injectable, OnInit } from '@angular/core';
-import { Deck } from '../../classes/Deck';
+import { Deck, EditDeckDTO } from '../../classes/Deck';
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
 import { User } from '../../classes/User';
 import { AddFlashcardDTO, Flashcard, FlashcardAnswer, FlashcardTrueFalse } from '../../classes/Flashcard';
@@ -79,6 +79,13 @@ export class DeckRepositoryService implements IDeckRepository {
   async addDeck(deck: Deck): Promise<void> {
     deck.id = this.decks[this.decks.length - 1].id + 1;
     this.decks.push(deck);
+  }
+
+  async editDeck(editDeckDTO: EditDeckDTO, selectedDeck: Deck): Promise<void> {
+    this.decks = this.decks.map((deck: Deck) => {
+      if(deck.id === selectedDeck.id) return { ...deck, name: editDeckDTO.name }
+      else return deck
+    })
   }
 
   async addFlashcard(addFlashcardDTO: AddFlashcardDTO, selectedDeck: Deck): Promise<void> {

@@ -1,0 +1,11 @@
+<h1 mat-dialog-title>Edycja talii</h1>
+<div mat-dialog-content [formGroup]="deckForm">
+  <mat-form-field>
+    <label>Nazwa:</label>
+    <input matInput formControlName="name" />
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close()">Anuluj</button>
+  <button mat-button (click)="editDeck()">Utwórz</button>
+</div>

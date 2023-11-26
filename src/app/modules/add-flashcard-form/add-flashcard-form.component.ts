@@ -26,7 +26,10 @@ export class AddFlashcardFormComponent implements OnInit {
   @Output() flashcardCreated = new EventEmitter<AddFlashcardDTO>();
   public flashcardForm!: FormGroup;
 
-  constructor(public dialogRef: MatDialogRef<AddFlashcardFormComponent>, private fb: FormBuilder) {}
+  constructor(
+    public dialogRef: MatDialogRef<AddFlashcardFormComponent>,
+    private fb: FormBuilder
+  ) {}
 
   ngOnInit(): void {
     this.flashcardForm = this.fb.group({
@@ -50,9 +53,9 @@ export class AddFlashcardFormComponent implements OnInit {
 
   public addFlashcard(): void {
     if (this.flashcardForm.valid) {
-      const addFlashcardDTO: AddFlashcardDTO = this.flashcardForm.value;
-      this.flashcardCreated.emit(addFlashcardDTO);
-      this.dialogRef.close();
+      const addFlashcardDTO: AddFlashcardDTO = this.flashcardForm.value
+      this.flashcardCreated.emit(addFlashcardDTO)
+      this.dialogRef.close()
     }
   }
 }

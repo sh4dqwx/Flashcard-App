@@ -4,12 +4,13 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { IconDefinition, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { CurrentStateService } from '../../services/current-state/current-state.service';
-import { Deck } from '../../classes/Deck';
+import { Deck, EditDeckDTO } from '../../classes/Deck';
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
 import { DeckRepositoryService } from '../../services/deck-repository/deck-repository.service';
 import { AddFlashcardDTO, Flashcard } from '../../classes/Flashcard';
 import { MatDialog } from '@angular/material/dialog';
 import { AddFlashcardFormComponent } from '../../modules/add-flashcard-form/add-flashcard-form.component';
+import { EditDeckFormComponent } from '../../modules/edit-deck-form/edit-deck-form.component';
 
 @Component({
   selector: 'app-deck-creator',
@@ -59,6 +60,17 @@ export class DeckCreatorComponent implements OnInit {
     const routeParams = this.route.snapshot.paramMap
     const deckId = Number(routeParams.get("deckId"));
     this.deck = await this.deckRepository.getDeck(deckId);
+  }
+
+  public editDeck(): void {
+    const dialogRef = this.dialog.open(EditDeckFormComponent, { data: { name: this.deck.name } })
+    dialogRef.componentInstance.deckEdited.subscribe(async (editDeckDTO: EditDeckDTO) => {
+      await this.deckRepository.editDeck(editDeckDTO, this.deck)
+      this.deck = await this.deckRepository.getDeck(this.deck.id)
+    })
+    dialogRef.afterClosed().subscribe(async result => {
+      console.log("EditDeck dialog has been closed");
+    })
   }
 
   public addFlashcard(): void {

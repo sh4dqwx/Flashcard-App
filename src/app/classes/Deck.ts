@@ -9,3 +9,7 @@ export type Deck = {
   isPublic: boolean,
   //tests: Test[]
 }
+
+export type EditDeckDTO = {
+  name: string
+}

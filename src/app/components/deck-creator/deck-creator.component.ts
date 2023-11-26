@@ -72,8 +72,9 @@ export class DeckCreatorComponent implements OnInit {
     })
   }
 
-  public deleteFlashcard(flashcard: Flashcard): void {
-
+  public async deleteFlashcard(flashcard: Flashcard): Promise<void> {
+    await this.deckRepository.deleteFlashcard(flashcard, this.deck)
+    this.deck = await this.deckRepository.getDeck(this.deck.id)
   }
 
   public logout(): void {

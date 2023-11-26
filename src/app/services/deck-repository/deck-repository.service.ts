@@ -95,4 +95,11 @@ export class DeckRepositoryService implements IDeckRepository {
       else return deck
     })
   }
+
+  async deleteFlashcard(selectedFlashcard: Flashcard, selectedDeck: Deck): Promise<void> {
+    this.decks = this.decks.map((deck: Deck) => {
+      if(deck.id === selectedDeck.id) return { ...deck, flashcards: deck.flashcards.filter((flashcard: Flashcard) => selectedFlashcard.id !== flashcard.id)}
+      else return deck
+    })
+  }
 }

@@ -6,6 +6,7 @@ import { CurrentStateService } from '../../services/current-state/current-state.
 import { User } from '../../classes/User';
 import { UserRepositoryService } from '../../services/user-repository/user-repository.service';
 import { IUserRepository } from '../../interfaces/IUserRepository';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -56,7 +57,7 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    const user = await this.userRepository.getUser(login?.value, password?.value);
+    const user = await firstValueFrom(this.userRepository.getUser(login?.value, password?.value))
     console.log(user);
     if (user == null) {
       this.isLogging = false;

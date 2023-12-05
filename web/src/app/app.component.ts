@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { RouterModule, RouterOutlet } from '@angular/router';
 import { DeckCreatorComponent } from './components/deck-creator/deck-creator.component';
 import { ReviewComponent } from './components/review/review.component';
 import { SummaryComponent } from './components/summary/summary.component';
@@ -15,6 +15,7 @@ import { MatDialogModule } from '@angular/material/dialog';
   imports: [
     CommonModule,
     RouterOutlet,
+    RouterModule,
     DeckCreatorComponent,
     ReviewComponent,
     SummaryComponent,

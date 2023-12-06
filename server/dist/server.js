@@ -1,15 +1,17 @@
 import express from "express";
+import cors from "cors";
 import { FlashcardAnswer, FlashcardTrueFalse } from "./types.js";
 import dotenv from "dotenv";
 dotenv.config();
 const app = express();
 const port = process.env.PORT;
+app.use(cors());
 app.use(express.json());
-app.post("/users", (req, res) => {
+app.post("/api/users", (req, res) => {
     const userData = req.body;
     res.send(users.find((user) => user.login == userData.login && user.password == userData.password));
 });
-app.get("/users/:id", (req, res) => {
+app.get("/api/users/:id", (req, res) => {
     const userId = req.params.id;
     res.send(users.find((user) => user.id === parseInt(userId)));
 });

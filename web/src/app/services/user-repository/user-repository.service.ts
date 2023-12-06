@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class UserRepositoryService implements IUserRepository {
-  private apiUrl: string = "http://localhost:5000/"
+  private apiUrl: string = "http://localhost:8080/api"
 
   users: User[] = [
     {

@@ -7,6 +7,7 @@ import { User } from '../../classes/User';
 import { UserRepositoryService } from '../../services/user-repository/user-repository.service';
 import { IUserRepository } from '../../interfaces/IUserRepository';
 import { firstValueFrom } from 'rxjs';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',

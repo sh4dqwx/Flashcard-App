@@ -1,4 +1,5 @@
 import express, { Express, Request, Response } from "express"
+import cors from "cors"
 import { User, Deck, FlashcardAnswer, FlashcardTrueFalse } from "./types.js"
 import dotenv from "dotenv"
 
@@ -6,14 +7,15 @@ dotenv.config()
 const app: Express = express()
 const port = process.env.PORT
 
+app.use(cors())
 app.use(express.json())
 
-app.post("/users", (req: Request, res: Response) => {
+app.post("/api/users", (req: Request, res: Response) => {
   const userData: { login: string, password: string} = req.body
   res.send(users.find((user: User) => user.login == userData.login && user.password == userData.password))
 })
 
-app.get("/users/:id", (req: Request, res: Response) => {
+app.get("/api/users/:id", (req: Request, res: Response) => {
   const userId: string = req.params.id;
   res.send(users.find((user: User) => user.id === parseInt(userId)))
 })

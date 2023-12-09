@@ -7,13 +7,67 @@ const app = express();
 const port = process.env.PORT;
 app.use(cors());
 app.use(express.json());
-app.post("/api/users", (req, res) => {
+app.post("/users", (req, res) => {
     const userData = req.body;
     res.send(users.find((user) => user.login == userData.login && user.password == userData.password));
 });
-app.get("/api/users/:id", (req, res) => {
-    const userId = req.params.id;
-    res.send(users.find((user) => user.id === parseInt(userId)));
+app.get("/users/:id", (req, res) => {
+    const userId = parseInt(req.params.id);
+    res.send(users.find((user) => user.id === userId));
+});
+app.get("/decks/:id", (req, res) => {
+    const deckId = parseInt(req.params.id);
+    res.send(decks.find((deck) => deck.id === deckId));
+});
+app.get("/decks/online", (req, res) => {
+    res.send(decks.filter((deck) => deck.isPublic === true));
+});
+app.get("/decks/private/:userId", (req, res) => {
+    const userId = parseInt(req.params.userId);
+    //console.log(userId)
+    //console.log(decks.filter((deck: Deck) => deck.author.id === userId))
+    res.status(200).send(decks.filter((deck) => deck.author.id === userId));
+});
+app.post("/decks", (req, res) => {
+    const deck = req.body;
+    deck.id = decks[decks.length - 1].id + 1;
+    decks.push(deck);
+    res.status(204).send();
+});
+app.put("/decks/:id", (req, res) => {
+    const deckId = parseInt(req.params.id);
+    const editDeckDTO = req.body;
+    const indexToUpdate = decks.findIndex((deck) => deck.id === deckId);
+    decks[indexToUpdate].name = editDeckDTO.name;
+    res.status(204).send();
+});
+app.delete("/decks/:id", (req, res) => {
+    const deckId = parseInt(req.params.id);
+    // do zrobienia
+});
+app.post("/decks/:deckId/flashcards", (req, res) => {
+    const deckId = parseInt(req.params.deckId);
+    const deckIndex = decks.findIndex((deck) => deck.id === deckId);
+    const addFlashcardDTO = req.body;
+    let flashcard;
+    const flashcardId = decks[deckIndex].flashcards[decks[deckIndex].flashcards.length - 1].id + 1;
+    if (addFlashcardDTO.type === "answer")
+        flashcard = new FlashcardAnswer(flashcardId, addFlashcardDTO.question, addFlashcardDTO.answer);
+    else if (addFlashcardDTO.type === "trueFalse")
+        flashcard = new FlashcardTrueFalse(flashcardId, addFlashcardDTO.question, addFlashcardDTO.trueFalseAnswer);
+    decks[deckIndex].flashcards.push(flashcard);
+    res.status(204).send();
+});
+app.put("/decks/:deckId/flashcards/:flashcardId", (req, res) => {
+    //do zrobienia
+});
+app.delete("/decks/:deckId/flashcards/:flashcardId", (req, res) => {
+    const deckId = parseInt(req.params.deckId);
+    const deckIndex = decks.findIndex((deck) => deck.id === deckId);
+    const flashcardId = parseInt(req.params.flashcardId);
+    const indexToDelete = decks[deckIndex].flashcards.findIndex((flashcard) => flashcard.id === flashcardId);
+    decks[deckIndex].flashcards.splice(indexToDelete, 1);
+    res.status(204).send();
 });
 const users = [
     {

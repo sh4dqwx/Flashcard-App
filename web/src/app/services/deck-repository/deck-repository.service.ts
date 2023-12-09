@@ -1,112 +1,44 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Deck, EditDeckDTO } from '../../classes/Deck';
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
-import { User } from '../../classes/User';
-import { AddFlashcardDTO, Flashcard, FlashcardAnswer, FlashcardTrueFalse } from '../../classes/Flashcard';
+import { AddFlashcardDTO } from '../../classes/Flashcard';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../environments/environment';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DeckRepositoryService implements IDeckRepository {
-  decks: Deck[] = [
-    {
-      id: 1,
-      name: "Angielski",
-      flashcards: [
-        new FlashcardAnswer(1, 'classroom', 'klasa'),
-        new FlashcardTrueFalse(2, 'Is the sky blue?', true),
-        new FlashcardAnswer(3, 'weather', 'pogoda'),
-        new FlashcardTrueFalse(4, 'Are elephants able to fly?', false),
-        new FlashcardAnswer(5, 'delicious', 'pyszny'),
-      ],
-      author: {
-        id: 1,
-        login: "admin",
-        password: "admin"
-      },
-      isPublic: true
-    },
-    {
-      id: 2,
-      name: "Niemiecki",
-      flashcards: [
-        new FlashcardAnswer(1, 'Haus', 'Dom'),
-        new FlashcardAnswer(2, 'Apfel', 'Jabłko'),
-        new FlashcardAnswer(3, 'Auto', 'Samochód'),
-        new FlashcardTrueFalse(4, 'Ist Berlin die Hauptstadt von Deutschland?', true),
-        new FlashcardTrueFalse(5, 'Ist Wasser eine feste Substanz?', false)
-      ],
-      author: {
-        id: 1,
-        login: "admin",
-        password: "admin"
-      },
-      isPublic: false
-    },
-    {
-      id: 3,
-      name: "Hiszpański",
-      flashcards: [
-        new FlashcardAnswer(1, 'Casa', 'Dom'),
-        new FlashcardAnswer(2, 'Manzana', 'Jabłko'),
-        new FlashcardAnswer(3, 'Coche', 'Samochód'),
-        new FlashcardTrueFalse(1, 'Es Madrid la capital de España?', true),
-        new FlashcardTrueFalse(2, 'El agua es una sustancia sólida?', false)
-      ],
-      author: {
-        id: 2,
-        login: "user",
-        password: "user"
-      },
-      isPublic: false
-    },
-  ]
+  private apiUrl: string = `${environment.apiUrl}/decks`
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
-  async getPrivateDecks(user: User): Promise<Deck[]> {
-    return this.decks.filter((deck: Deck) => deck.author.id === user.id);
+  getPrivateDecks(userId: number): Observable<Deck[]> {
+    return this.http.get<Deck[]>(`${this.apiUrl}/private/${userId}`)
   }
 
-  async getOnlineDecks(): Promise<Deck[]> {
-    return this.decks.filter((deck: Deck) => deck.isPublic === true);
+  getOnlineDecks(): Observable<Deck[]> {
+    return this.http.get<Deck[]>(`${this.apiUrl}/online`)
   }
 
-  async getDeck(id: number): Promise<Deck | undefined> {
-    return this.decks.find((deck: Deck) => deck.id == id)
+  getDeck(id: number): Observable<Deck> {
+    return this.http.get<Deck>(`${this.apiUrl}/${id}`)
   }
 
-  async addDeck(deck: Deck): Promise<void> {
-    deck.id = this.decks[this.decks.length - 1].id + 1;
-    this.decks.push(deck);
+  addDeck(deck: Deck): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}`, deck)
   }
 
-  async editDeck(editDeckDTO: EditDeckDTO, selectedDeck: Deck): Promise<void> {
-    this.decks = this.decks.map((deck: Deck) => {
-      if(deck.id === selectedDeck.id) return { ...deck, name: editDeckDTO.name }
-      else return deck
-    })
+  editDeck(deckId: number, editDeckDTO: EditDeckDTO): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${deckId}`, editDeckDTO)
   }
 
-  async addFlashcard(addFlashcardDTO: AddFlashcardDTO, selectedDeck: Deck): Promise<void> {
-    let flashcard: Flashcard
-    const flashcardId = selectedDeck.flashcards[selectedDeck.flashcards.length - 1].id + 1
-
-    if(addFlashcardDTO.type === "answer")
-      flashcard = new FlashcardAnswer(flashcardId, addFlashcardDTO.question, addFlashcardDTO.answer)
-    else if(addFlashcardDTO.type === "trueFalse")
-      flashcard = new FlashcardTrueFalse(flashcardId, addFlashcardDTO.question, addFlashcardDTO.trueFalseAnswer)
-
-    this.decks = this.decks.map((deck: Deck) => {
-      if(deck.id === selectedDeck.id) return { ...deck, flashcards: [...deck.flashcards, flashcard] }
-      else return deck
-    })
+  addFlashcard(deckId: number, addFlashcardDTO: AddFlashcardDTO): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${deckId}/flashcards`, addFlashcardDTO)
   }
 
-  async deleteFlashcard(selectedFlashcard: Flashcard, selectedDeck: Deck): Promise<void> {
-    this.decks = this.decks.map((deck: Deck) => {
-      if(deck.id === selectedDeck.id) return { ...deck, flashcards: deck.flashcards.filter((flashcard: Flashcard) => selectedFlashcard.id !== flashcard.id)}
-      else return deck
-    })
+  deleteFlashcard(deckId: number, flashcardId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${deckId}/flashcards/${flashcardId}`)
   }
 }

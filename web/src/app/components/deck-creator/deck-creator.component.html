@@ -5,14 +5,14 @@
     <button id="logout-btn" (click)="logout()">Wyloguj</button>
   </header>
   <div id="deck-name">
-    <h2>{{ deck.name }}</h2>
+    <h2>{{ deck?.name }}</h2>
     <fa-icon [icon]="editIcon" (click)="editDeck()"></fa-icon>
   </div>
   <div id="deck-container">
     <div id="flashcard-list">
-      <div *ngFor="let flashcard of deck.flashcards" class="flashcard">
+      <div *ngFor="let flashcard of deck?.flashcards" class="flashcard">
         <div class="question">{{ flashcard.question }}</div>
-        <div class="answer">{{ flashcard.getAnswer() }}</div>
+        <div class="answer">{{ flashcard.answer }}</div>
         <fa-icon class="delete-flashcard-btn" [icon]="deleteIcon" (click)="deleteFlashcard(flashcard)"></fa-icon>
       </div>
     </div>
@@ -20,7 +20,7 @@
       <button id="add-flashcard-btn" (click)="addFlashcard()">Dodaj</button>
       <button [routerLink]="['/review']">Powtórka</button>
       <button [routerLink]="['/test']">Test</button>
-      <button (click)="deck.isPublic = !deck.isPublic">Udostępnij</button>
+      <button (click)="shareDeck()">Udostępnij</button>
     </div>
   </div>
 </div>

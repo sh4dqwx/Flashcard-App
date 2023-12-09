@@ -7,10 +7,11 @@ import { CurrentStateService } from '../../services/current-state/current-state.
 import { Deck, EditDeckDTO } from '../../classes/Deck';
 import { IDeckRepository } from '../../interfaces/IDeckRepository';
 import { DeckRepositoryService } from '../../services/deck-repository/deck-repository.service';
-import { AddFlashcardDTO, Flashcard } from '../../classes/Flashcard';
+import { AddFlashcardDTO, Flashcard, FlashcardAnswer, FlashcardTrueFalse } from '../../classes/Flashcard';
 import { MatDialog } from '@angular/material/dialog';
 import { AddFlashcardFormComponent } from '../../modules/add-flashcard-form/add-flashcard-form.component';
 import { EditDeckFormComponent } from '../../modules/edit-deck-form/edit-deck-form.component';
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-deck-creator',
@@ -26,16 +27,8 @@ import { EditDeckFormComponent } from '../../modules/edit-deck-form/edit-deck-fo
 export class DeckCreatorComponent implements OnInit {
   private deckRepository!: IDeckRepository
   private applicationState!: CurrentStateService
-  private _deck!: Deck
 
-  get deck(): Deck { return this._deck }
-
-  set deck(value: Deck | undefined) {
-    if(value === undefined)
-      this.router.navigate(['/error'])
-    else this._deck = value
-  }
-
+  deck!: Deck | undefined
   editIcon!: IconDefinition
   deleteIcon!: IconDefinition
 
@@ -49,7 +42,7 @@ export class DeckCreatorComponent implements OnInit {
     this.applicationState = this.injector.get(CurrentStateService);
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     console.log(this.applicationState.getCurrentUser())
     if (this.applicationState.getCurrentUser() == null)
       return this.logout()
@@ -59,14 +52,19 @@ export class DeckCreatorComponent implements OnInit {
 
     const routeParams = this.route.snapshot.paramMap
     const deckId = Number(routeParams.get("deckId"));
-    this.deck = await this.deckRepository.getDeck(deckId);
+    this.getDeck(deckId)
+  }
+
+  private getDeck(deckId: number): void {
+    this.deckRepository.getDeck(deckId).subscribe((deck: Deck) => { this.deck = deck })
   }
 
   public editDeck(): void {
-    const dialogRef = this.dialog.open(EditDeckFormComponent, { data: { name: this.deck.name } })
-    dialogRef.componentInstance.deckEdited.subscribe(async (editDeckDTO: EditDeckDTO) => {
-      await this.deckRepository.editDeck(editDeckDTO, this.deck)
-      this.deck = await this.deckRepository.getDeck(this.deck.id)
+    if(this.deck == undefined) return
+    const { id, name } = this.deck
+    const dialogRef = this.dialog.open(EditDeckFormComponent, { data: { name: name } })
+    dialogRef.componentInstance.deckEdited.subscribe((editDeckDTO: EditDeckDTO) => {
+      this.deckRepository.editDeck(id, editDeckDTO).subscribe(() => this.getDeck(id))
     })
     dialogRef.afterClosed().subscribe(async result => {
       console.log("EditDeck dialog has been closed");
@@ -74,10 +72,11 @@ export class DeckCreatorComponent implements OnInit {
   }
 
   public addFlashcard(): void {
+    if(this.deck == undefined) return
+    const id = this.deck.id
     const dialogRef = this.dialog.open(AddFlashcardFormComponent);
-    dialogRef.componentInstance.flashcardCreated.subscribe(async (addFlashcardDTO: AddFlashcardDTO) => {
-      await this.deckRepository.addFlashcard(addFlashcardDTO, this.deck)
-      this.deck = await this.deckRepository.getDeck(this.deck.id)
+    dialogRef.componentInstance.flashcardCreated.subscribe((addFlashcardDTO: AddFlashcardDTO) => {
+      this.deckRepository.addFlashcard(id, addFlashcardDTO).subscribe(() => this.getDeck(id))
     })
     dialogRef.afterClosed().subscribe(async result => {
       console.log("AddFlashcard dialog has been closed");
@@ -85,8 +84,14 @@ export class DeckCreatorComponent implements OnInit {
   }
 
   public async deleteFlashcard(flashcard: Flashcard): Promise<void> {
-    await this.deckRepository.deleteFlashcard(flashcard, this.deck)
-    this.deck = await this.deckRepository.getDeck(this.deck.id)
+    if(this.deck == undefined) return
+    const id = this.deck.id
+    this.deckRepository.deleteFlashcard(id, flashcard.id).subscribe(() => this.getDeck(id))
+  }
+
+  public shareDeck() {
+    if(this.deck == undefined) return
+    this.deck.isPublic = !this.deck.isPublic
   }
 
   public logout(): void {

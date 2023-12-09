@@ -10,6 +10,7 @@ import { CurrentStateService } from '../../services/current-state/current-state.
 import { User } from '../../classes/User';
 import { MatDialog } from '@angular/material/dialog';
 import { DeckFormComponent } from '../../modules/deck-form/deck-form.component';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-search',
@@ -43,7 +44,7 @@ export class SearchComponent implements OnInit {
     this.applicationState = this.injector.get(CurrentStateService);
   }
 
-  async ngOnInit(): Promise<void> {
+  ngOnInit(): void {
     if (this.applicationState.getCurrentUser() === null)
       return this.logout()
 
@@ -51,25 +52,31 @@ export class SearchComponent implements OnInit {
     this.deleteIcon = faTrash
     this.publicIcon = faCloud
     this.showPrivateDecks = true
+    this.privateDecks = []
+    this.filteredPrivateDecks = []
+    this.onlineDecks = []
+    this.filteredOnlineDecks = []
 
-    await Promise.all([
-      this.getPrivateDecks(),
-      this.getOnlineDecks()
-    ])
+    this.getPrivateDecks()
+    this.getOnlineDecks()
   }
 
-  private async getPrivateDecks(): Promise<void> {
+  private getPrivateDecks(): void {
     const user: User | null = this.applicationState.getCurrentUser();
     if (user == null)
       return this.logout();
 
-    this.privateDecks = await this.deckRepository.getPrivateDecks(user);
-    this.filteredPrivateDecks = this.privateDecks; //.map(deck => deck);
+    this.deckRepository.getPrivateDecks(user.id).subscribe((deckList: Deck[]) => {
+      this.privateDecks = deckList
+      this.filteredPrivateDecks = deckList;
+    })
   }
 
-  private async getOnlineDecks(): Promise<void> {
-    this.onlineDecks = await this.deckRepository.getOnlineDecks();
-    this.filteredOnlineDecks = this.onlineDecks; //.map(deck => deck);
+  private getOnlineDecks(): void {
+    this.deckRepository.getOnlineDecks().subscribe((deckList: Deck[]) => {
+      this.onlineDecks = deckList
+      this.filteredOnlineDecks = deckList
+    })
   }
 
   public onlineToggle(): void {
@@ -106,14 +113,14 @@ export class SearchComponent implements OnInit {
         flashcards: [],
         author: user,
         isPublic: false
-      };
-      await this.deckRepository.addDeck(deck);
-      await this.getPrivateDecks();
-    });
+      }
+
+      this.deckRepository.addDeck(deck).subscribe(() => { this.getPrivateDecks() })
+    })
   }
 
   public editDeck(deck: Deck): void {
-    this.router.navigate(['/deck', deck.id]); //podać id talii
+    this.router.navigate(['/deck', deck.id]);
   }
 
   public logout(): void {

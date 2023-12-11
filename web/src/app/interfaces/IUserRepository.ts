@@ -1,6 +1,7 @@
+import { Observable } from 'rxjs';
 import { User } from '../classes/User';
 
 export interface IUserRepository {
-    getUser: (login: string, password: string) => Promise<User | undefined>;
-    getUserById: (id: number) => Promise<User | undefined>;
+    getUser: (login: string, password: string) => Observable<User>;
+    getUserById: (id: number) => Observable<User>;
 }

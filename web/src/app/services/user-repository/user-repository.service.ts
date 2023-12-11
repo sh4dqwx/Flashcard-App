@@ -1,31 +1,23 @@
 import { Injectable } from '@angular/core';
 import { User } from '../../classes/User';
 import { IUserRepository } from '../../interfaces/IUserRepository';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserRepositoryService implements IUserRepository {
-  users: User[] = [
-    {
-      id: 1,
-      login: "admin",
-      password: "admin"
-    },
-    {
-      id: 2,
-      login: "user",
-      password: "user"
-    }
-  ]
+  private apiUrl: string = `${environment.apiUrl}/users`
 
-  constructor() { }
+  constructor(private http: HttpClient) { }
 
-  async getUser(login: string, password: string): Promise<User | undefined> {
-    return this.users.find((user: User) => user.login == login && user.password == password)
+  getUser(login: string, password: string): Observable<User> {
+    return this.http.post<User>(`${this.apiUrl}`, { login, password })
   }
 
-  async getUserById(id: number): Promise<User | undefined> {
-    return this.users.find((user: User) => user.id == id)
+  getUserById(id: number): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/${id}`)
   }
 }

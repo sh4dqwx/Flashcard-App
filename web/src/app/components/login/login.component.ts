@@ -6,6 +6,8 @@ import { CurrentStateService } from '../../services/current-state/current-state.
 import { User } from '../../classes/User';
 import { UserRepositoryService } from '../../services/user-repository/user-repository.service';
 import { IUserRepository } from '../../interfaces/IUserRepository';
+import { firstValueFrom } from 'rxjs';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -41,7 +43,7 @@ export class LoginComponent implements OnInit {
     this.applicationState = this.injector.get(CurrentStateService);
   }
 
-  async login(event: any): Promise<void> {
+  login(event: any): void {
     event.preventDefault();
     this.isLogging = true;
     const login = this.loginGroup.get("loginField");
@@ -56,16 +58,17 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    const user = await this.userRepository.getUser(login?.value, password?.value);
-    console.log(user);
-    if (user == null) {
-      this.isLogging = false;
-      console.log("Invalid login or password");
-      return;
-    }
+    this.userRepository.getUser(login?.value, password?.value).subscribe((user: User) => {
+      console.log(user)
+      if (user == null) {
+        this.isLogging = false;
+        console.log("Invalid login or password")
+        return
+      }
 
-    this.applicationState.setCurrentUser(user);
-    this.isLogging = false;
-    this.router.navigate(['/search']);
+      this.applicationState.setCurrentUser(user)
+      this.isLogging = false
+      this.router.navigate(['/search'])
+    })
   }
 }

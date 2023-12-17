@@ -31,8 +31,6 @@ app.get("/decks/online", (req: Request, res: Response) => {
 
 app.get("/decks/private/:userId", (req: Request, res: Response) => {
   const userId: number = parseInt(req.params.userId)
-  //console.log(userId)
-  //console.log(decks.filter((deck: Deck) => deck.author.id === userId))
   res.status(200).send(decks.filter((deck: Deck) => deck.author.id === userId))
 })
 
@@ -108,6 +106,16 @@ const decks: Deck[] = [
       new FlashcardAnswer(3, 'weather', 'pogoda'),
       new FlashcardTrueFalse(4, 'Are elephants able to fly?', false),
       new FlashcardAnswer(5, 'delicious', 'pyszny'),
+      new FlashcardAnswer(6, 'book', 'książka'),
+      new FlashcardAnswer(7, 'garden', 'ogród'),
+      new FlashcardAnswer(8, 'telephone', 'telefon'),
+      new FlashcardAnswer(9, 'mountain', 'góra'),
+      new FlashcardAnswer(10, 'happiness', 'szczęście'),
+      new FlashcardAnswer(11, 'ocean', 'ocean'),
+      new FlashcardAnswer(12, 'camera', 'aparat fotograficzny'),
+      new FlashcardAnswer(13, 'friendship', 'przyjaźń'),
+      new FlashcardTrueFalse(14, 'Is the sun a planet?', false),
+      new FlashcardTrueFalse(15, 'Are birds mammals?', false)
     ],
     author: {
       id: 1,

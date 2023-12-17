@@ -11,7 +11,7 @@ import { AddFlashcardDTO, Flashcard, FlashcardAnswer, FlashcardTrueFalse } from 
 import { MatDialog } from '@angular/material/dialog';
 import { AddFlashcardFormComponent } from '../../modules/add-flashcard-form/add-flashcard-form.component';
 import { EditDeckFormComponent } from '../../modules/edit-deck-form/edit-deck-form.component';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { TestGeneratorService } from '../../services/test-generator/test-generator.service';
 
 @Component({
   selector: 'app-deck-creator',
@@ -27,6 +27,7 @@ import { firstValueFrom, lastValueFrom } from 'rxjs';
 export class DeckCreatorComponent implements OnInit {
   private deckRepository!: IDeckRepository
   private applicationState!: CurrentStateService
+  private testGenerator!: TestGeneratorService
 
   deck!: Deck | undefined
   editIcon!: IconDefinition
@@ -40,6 +41,7 @@ export class DeckCreatorComponent implements OnInit {
   ) {
     this.deckRepository = this.injector.get<IDeckRepository>(DeckRepositoryService);
     this.applicationState = this.injector.get(CurrentStateService);
+    this.testGenerator = this.injector.get(TestGeneratorService);
   }
 
   ngOnInit(): void {

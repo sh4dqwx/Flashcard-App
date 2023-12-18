@@ -1,7 +1,7 @@
 import { Component, Injector, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CurrentStateService } from '../../services/current-state/current-state.service';
 import { User } from '../../classes/User';
 import { UserRepositoryService } from '../../services/user-repository/user-repository.service';
@@ -28,7 +28,7 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.loginGroup = this.formBuilder.group({
-      loginField: ['', Validators.required],
+      loginField: ['', Validators.required, this.customLoginValidator],
       passwordField: ['', Validators.required]
     })
     this.isLogging = false
@@ -43,26 +43,32 @@ export class LoginComponent implements OnInit {
     this.applicationState = this.injector.get(CurrentStateService);
   }
 
+  customLoginValidator(control: AbstractControl): Promise<ValidationErrors | null> {
+    const forbiddenUsernames = ['root', 'bot'];
+    const inputValue = control.value;
+
+    if (forbiddenUsernames.includes(inputValue))
+      return Promise.resolve({ forbiddenUsername: true });
+
+    return Promise.resolve(null);
+  }
+
   login(event: any): void {
     event.preventDefault();
     this.isLogging = true;
     const login = this.loginGroup.get("loginField");
     const password = this.loginGroup.get("passwordField");
 
-    console.log("login: " + login?.value);
-    console.log("password: " + password?.value);
-
     if (!this.loginGroup.valid) {
       this.isLogging = false;
-      console.log("Invalid login or password");
+      alert("Invalid login or password");
       return;
     }
 
     this.userRepository.getUser(login?.value, password?.value).subscribe((user: User) => {
-      console.log(user)
       if (user == null) {
         this.isLogging = false;
-        console.log("Invalid login or password")
+        alert("Invalid login or password")
         return
       }
 

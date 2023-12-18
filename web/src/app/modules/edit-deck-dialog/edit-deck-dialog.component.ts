@@ -1,12 +1,11 @@
 import { Component, EventEmitter, Inject, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EditDeckDTO } from '../../classes/Deck';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { EditDeckDialogComponent } from '../edit-deck-dialog/edit-deck-dialog.component';
 
 @Component({
   selector: 'app-edit-deck-form',
@@ -18,25 +17,30 @@ import { EditDeckDialogComponent } from '../edit-deck-dialog/edit-deck-dialog.co
     MatFormFieldModule,
     MatButtonModule
   ],
-  templateUrl: './edit-deck-form.component.html',
-  styleUrl: './edit-deck-form.component.css'
+  templateUrl: './edit-deck-dialog.component.html',
+  styleUrl: './edit-deck-dialog.component.css'
 })
-export class EditDeckFormComponent implements OnInit {
-  @Input() deckData!: EditDeckDTO
+export class EditDeckDialogComponent implements OnInit {
   @Output() deckEdited = new EventEmitter<EditDeckDTO>()
   public deckForm!: FormGroup
 
   constructor(
-    private dialog: MatDialog
+    public dialogRef: MatDialogRef<EditDeckDialogComponent>,
+    private fb: FormBuilder,
+    @Inject(MAT_DIALOG_DATA) public data: EditDeckDTO
   ) { }
 
   ngOnInit(): void {
-    const dialogRef = this.dialog.open(EditDeckDialogComponent, { data: this.deckData })
-    dialogRef.componentInstance.deckEdited.subscribe((editDeckDTO: EditDeckDTO) => {
+    this.deckForm = this.fb.group({
+      name: [this.data.name, Validators.required]
+    })
+  }
+
+  public editDeck(): void {
+    if (this.deckForm.valid) {
+      const editDeckDTO: EditDeckDTO = this.deckForm.value
       this.deckEdited.emit(editDeckDTO)
-    })
-    dialogRef.afterClosed().subscribe(async result => {
-      console.log("EditDeck dialog has been closed");
-    })
+      this.dialogRef.close()
+    }
   }
 }

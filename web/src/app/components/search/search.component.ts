@@ -11,6 +11,7 @@ import { User } from '../../classes/User';
 import { MatDialog } from '@angular/material/dialog';
 import { DeckFormComponent } from '../../modules/deck-form/deck-form.component';
 import { firstValueFrom } from 'rxjs';
+import { SortDeckPipe } from '../../filters/sort-deck.pipe';
 
 @Component({
   selector: 'app-search',
@@ -18,7 +19,8 @@ import { firstValueFrom } from 'rxjs';
   imports: [
     CommonModule,
     FontAwesomeModule,
-    RouterModule
+    RouterModule,
+    SortDeckPipe
   ],
   templateUrl: './search.component.html',
   styleUrl: './search.component.css'
@@ -53,9 +55,7 @@ export class SearchComponent implements OnInit {
     this.publicIcon = faCloud
     this.showPrivateDecks = true
     this.privateDecks = []
-    this.filteredPrivateDecks = []
     this.onlineDecks = []
-    this.filteredOnlineDecks = []
 
     this.getPrivateDecks()
     this.getOnlineDecks()
@@ -68,33 +68,20 @@ export class SearchComponent implements OnInit {
 
     this.deckRepository.getPrivateDecks(user.id).subscribe((deckList: Deck[]) => {
       this.privateDecks = deckList
-      this.filteredPrivateDecks = deckList;
     })
   }
 
   private getOnlineDecks(): void {
     this.deckRepository.getOnlineDecks().subscribe((deckList: Deck[]) => {
+      console.log(deckList)
       this.onlineDecks = deckList
-      this.filteredOnlineDecks = deckList
     })
   }
 
   public onlineToggle(): void {
     this.showPrivateDecks = !this.showPrivateDecks;
     this.searchInput.nativeElement.value = '';
-    this.filteredPrivateDecks = this.privateDecks;
     this.filteredOnlineDecks = this.onlineDecks;
-  }
-
-  public filterDecks(event: any): void {
-    if (this.showPrivateDecks)
-      this.filteredPrivateDecks = this.privateDecks.filter(deck =>
-        deck.name.toLowerCase().includes(event.target.value.toLowerCase())
-      );
-    else
-      this.filteredOnlineDecks = this.onlineDecks.filter(deck =>
-        deck.name.toLowerCase().includes(event.target.value.toLowerCase())
-      );
   }
 
   public addDeck(): void {

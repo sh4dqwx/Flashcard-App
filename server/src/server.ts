@@ -11,7 +11,7 @@ app.use(cors())
 app.use(express.json())
 
 app.post("/users", (req: Request, res: Response) => {
-  const userData: { login: string, password: string} = req.body
+  const userData: { login: string, password: string } = req.body
   res.send(users.find((user: User) => user.login == userData.login && user.password == userData.password))
 })
 
@@ -61,9 +61,9 @@ app.post("/decks/:deckId/flashcards", (req: Request, res: Response) => {
 
   let flashcard: Flashcard
   const flashcardId = decks[deckIndex].flashcards[decks[deckIndex].flashcards.length - 1].id + 1
-  if(addFlashcardDTO.type === "answer")
+  if (addFlashcardDTO.type === "answer")
     flashcard = new FlashcardAnswer(flashcardId, addFlashcardDTO.question, addFlashcardDTO.answer)
-  else if(addFlashcardDTO.type === "trueFalse")
+  else if (addFlashcardDTO.type === "trueFalse")
     flashcard = new FlashcardTrueFalse(flashcardId, addFlashcardDTO.question, addFlashcardDTO.trueFalseAnswer)
 
   decks[deckIndex].flashcards.push(flashcard)

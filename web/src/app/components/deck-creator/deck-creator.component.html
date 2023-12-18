@@ -6,7 +6,7 @@
   </header>
   <div id="deck-name">
     <h2>{{ deck?.name }}</h2>
-    <fa-icon [icon]="editIcon" (click)="editDeck()"></fa-icon>
+    <fa-icon [icon]="editIcon" (click)="showEditDeckDialog()"></fa-icon>
   </div>
   <div id="deck-container">
     <div id="flashcard-list">
@@ -22,5 +22,9 @@
       <button [routerLink]="['/test']">Test</button>
       <button (click)="shareDeck()">Udostępnij</button>
     </div>
+  </div>
+
+  <div *ngIf="isEditDeckDialog">
+    <app-edit-deck-form [deckData]="{ 'name': deck?.name ?? '' }" (deckEdited)="editDeck($event)" />
   </div>
 </div>

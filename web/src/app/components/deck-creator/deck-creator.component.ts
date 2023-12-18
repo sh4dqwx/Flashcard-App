@@ -19,7 +19,8 @@ import { TestGeneratorService } from '../../services/test-generator/test-generat
   imports: [
     CommonModule,
     FontAwesomeModule,
-    RouterModule
+    RouterModule,
+    EditDeckFormComponent
   ],
   templateUrl: './deck-creator.component.html',
   styleUrl: './deck-creator.component.css'
@@ -32,6 +33,7 @@ export class DeckCreatorComponent implements OnInit {
   deck!: Deck | undefined
   editIcon!: IconDefinition
   deleteIcon!: IconDefinition
+  isEditDeckDialog!: boolean
 
   constructor(
     private router: Router,
@@ -55,26 +57,27 @@ export class DeckCreatorComponent implements OnInit {
     const routeParams = this.route.snapshot.paramMap
     const deckId = Number(routeParams.get("deckId"));
     this.getDeck(deckId)
+
+    this.isEditDeckDialog = false
   }
 
   private getDeck(deckId: number): void {
     this.deckRepository.getDeck(deckId).subscribe((deck: Deck) => { this.deck = deck })
   }
 
-  public editDeck(): void {
-    if(this.deck == undefined) return
-    const { id, name } = this.deck
-    const dialogRef = this.dialog.open(EditDeckFormComponent, { data: { name: name } })
-    dialogRef.componentInstance.deckEdited.subscribe((editDeckDTO: EditDeckDTO) => {
-      this.deckRepository.editDeck(id, editDeckDTO).subscribe(() => this.getDeck(id))
-    })
-    dialogRef.afterClosed().subscribe(async result => {
-      console.log("EditDeck dialog has been closed");
-    })
+  public showEditDeckDialog(): void {
+    this.isEditDeckDialog = true
+  }
+
+  public editDeck(editDeckDTO: EditDeckDTO): void {
+    if (this.deck == undefined) return
+    const id = this.deck.id
+    this.isEditDeckDialog = false
+    this.deckRepository.editDeck(id, editDeckDTO).subscribe(() => this.getDeck(id))
   }
 
   public addFlashcard(): void {
-    if(this.deck == undefined) return
+    if (this.deck == undefined) return
     const id = this.deck.id
     const dialogRef = this.dialog.open(AddFlashcardFormComponent);
     dialogRef.componentInstance.flashcardCreated.subscribe((addFlashcardDTO: AddFlashcardDTO) => {
@@ -86,13 +89,13 @@ export class DeckCreatorComponent implements OnInit {
   }
 
   public async deleteFlashcard(flashcard: Flashcard): Promise<void> {
-    if(this.deck == undefined) return
+    if (this.deck == undefined) return
     const id = this.deck.id
     this.deckRepository.deleteFlashcard(id, flashcard.id).subscribe(() => this.getDeck(id))
   }
 
   public shareDeck() {
-    if(this.deck == undefined) return
+    if (this.deck == undefined) return
     this.deck.isPublic = !this.deck.isPublic
   }
 

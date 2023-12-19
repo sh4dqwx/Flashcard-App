@@ -99,6 +99,14 @@ export class DeckCreatorComponent implements OnInit {
     this.deck.isPublic = !this.deck.isPublic
   }
 
+  public goToTest(): void {
+    this.router.navigate(['/test', this.deck?.id]);
+  }
+
+  public goToReview(): void {
+    this.router.navigate(['/review', this.deck?.id]);
+  }
+
   public logout(): void {
     this.applicationState.removeCurrentUser();
     this.router.navigate(['/login']);

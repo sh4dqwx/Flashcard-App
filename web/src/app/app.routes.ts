@@ -12,9 +12,9 @@ export const routes: Routes = [
     { path: "login", component: LoginComponent },
     { path: "search", component: SearchComponent },
     { path: "deck/:deckId", component: DeckCreatorComponent },
-    { path: "review", component: ReviewComponent },
-    { path: "test", component: TestComponent },
+    { path: "review/:deckId", component: ReviewComponent },
+    { path: "test/:deckId", component: TestComponent },
     { path: "summary", component: SummaryComponent },
-    { path: "error", component: ErrorComponent},
+    { path: "error", component: ErrorComponent },
     { path: "**", redirectTo: "/error", pathMatch: "full" }
 ];

@@ -4,17 +4,17 @@
         <button id="logout-btn" (click)="logout()">Wyloguj</button>
     </header>
     <div id="test-flashcard">
-        <h2>[pytanie]</h2>
-        <span>[nr fiszki]/[ilość fiszek]</span>
+        <h2>{{currentDeck!.flashcards[currentIndex].question}}</h2>
+        <span>{{currentIndex + 1}}/{{currentDeck!.flashcards.length}}</span>
     </div>
     <div>
         <div id="options-row">
-            <button (click)="next(0)">a: ...</button>
-            <button (click)="next(1)">b: ...</button>
+            <button (click)="next(0)">a: {{currentDeck!.flashcards[currentIndex].answer}}</button>
+            <button (click)="next(1)">b: {{currentDeck!.flashcards[firstRandomIndex].answer}}</button>
         </div>
         <div id="options-row">
-            <button (click)="next(2)">c: ...</button>
-            <button (click)="next(3)">d: ...</button>
+            <button (click)="next(2)">c: {{currentDeck!.flashcards[secondRandomIndex].answer}}</button>
+            <button (click)="next(3)">d: {{currentDeck!.flashcards[thirdRandomIndex].answer}}</button>
         </div>
     </div>
 </div>

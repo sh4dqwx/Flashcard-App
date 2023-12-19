@@ -18,8 +18,8 @@
     </div>
     <div id="deck-options">
       <button id="add-flashcard-btn" (click)="addFlashcard()">Dodaj</button>
-      <button [routerLink]="['/review']">Powtórka</button>
-      <button [routerLink]="['/test']">Test</button>
+      <button (click)="goToReview()">Powtórka</button>
+      <button (click)="goToTest()">Test</button>
       <button (click)="shareDeck()">Udostępnij</button>
     </div>
   </div>

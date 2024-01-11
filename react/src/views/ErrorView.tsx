@@ -1,9 +1,12 @@
-import { FC } from "react"
+import React from 'react';
 
-const ErrorView: FC = () => {
+const ErrorView = () => {
     return (
-        <div></div>
-    )
-}
+        <div>
+            <h1>404</h1>
+            <p>Nie znaleziono strony</p>
+        </div>
+    );
+};
 
-export default ErrorView
+export default ErrorView;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-const Login = () => {
+const LoginView = () => {
     const { register, handleSubmit, formState: { errors, isValid }, setError } = useForm();
     const [isLogging, setIsLogging] = useState(false);
 
@@ -40,4 +40,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default LoginView;

@@ -9,8 +9,10 @@ type CurrentStateContextType = {
 
 const CurrentStateContext = createContext<CurrentStateContextType | null>(null)
 
-export const useCurrentState = () => {
-  return useContext(CurrentStateContext)
+export const useCurrentState = (): CurrentStateContextType => {
+  const context = useContext(CurrentStateContext)
+  if (context == null) throw new Error("Context not initialized")
+  return context
 }
 
 export const CurrentStateProvider: FC<{ children: ReactNode }> = ({ children }) => {

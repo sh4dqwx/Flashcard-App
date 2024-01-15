@@ -4,27 +4,43 @@ import { environment } from "../environments/environment"
 import axios, { AxiosResponse } from "axios"
 
 type UserRepositoryContextType = {
-  getUser: (login: string, password: string) => Promise<User>,
-  getUserById: (id: number) => Promise<User>
+  getUser: (login: string, password: string) => Promise<User | null>,
+  getUserById: (id: number) => Promise<User | null>
 }
 
 const UserRepositoryContext = createContext<UserRepositoryContextType | null>(null)
 
-export const useUserRepository = () => {
-  return useContext(UserRepositoryContext)
+export const useUserRepository = (): UserRepositoryContextType => {
+  const context = useContext(UserRepositoryContext)
+  if (context == null) throw new Error("Context not initialized")
+  return context
 }
 
 export const UserRepositoryProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const apiUrl: string = environment.apiUrl
-  
-  const getUser = async (login: string, password: string): Promise<User> => {
-    const response: AxiosResponse<User> = await axios.post(`${apiUrl}`, { login, password })
-    return response.data
+
+  const getUser = async (login: string, password: string): Promise<User | null> => {
+    try {
+      const response: AxiosResponse<User> = await axios.post(`${apiUrl}/users`, { login, password });
+      console.log(response);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
+    // const response: AxiosResponse<User> = await axios.post(`${apiUrl}`, { login, password })
+    // console.log(response);
+    // return response.data
   }
 
-  const getUserById = async (id: number): Promise<User> => {
-    const response: AxiosResponse<User> = await axios.get(`${apiUrl}/${id}`)
-    return response.data
+  const getUserById = async (id: number): Promise<User | null> => {
+    try {
+      const response: AxiosResponse<User> = await axios.get(`${apiUrl}/users/${id}`);
+      return response.data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   }
 
   return (

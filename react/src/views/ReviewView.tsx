@@ -1,41 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
-import { TestGeneratorService } from '../../services/test-generator/test-generator.service';
-import { IDeckRepository } from '../../interfaces/IDeckRepository';
-import { Deck } from '../../classes/Deck';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDeckRepository } from '../providers/DeckRepositoryProvider';
+import { useTestGenerator } from '../providers/TestGeneratorProvider';
+import { useCurrentState } from '../providers/CurrentStateProvider';
+import { Deck } from '../classes/Deck';
 
 const ReviewView = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const { deckId } = useParams();
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [currentDeck, setCurrentDeck] = useState(null);
+    const [currentDeck, setCurrentDeck] = useState<Deck>()
 
-    const deckRepository = new IDeckRepository();
-    const testGenerator = new TestGeneratorService();
+    const currentState = useCurrentState()
+    const deckRepository = useDeckRepository()
+    const testGenerator = useTestGenerator()
 
     useEffect(() => {
-        const currentUser = localStorage.getItem('currentUser');
+        const currentUser = currentState.getCurrentUser()
         if (!currentUser) {
-            history.push('/login');
+            navigate('/login');
         } else {
-            const id = Number(deckId);
+            const id = Number(deckId)
             deckRepository.getDeck(id).then((deck) => {
-                testGenerator.generate(deck);
-                setCurrentDeck(deck);
-            });
+                testGenerator.generate(deck)
+                setCurrentDeck(deck)
+            })
         }
-    }, [deckId, history]);
+    }, [deckId])
 
     const logout = () => {
-        localStorage.removeItem('currentUser');
-        history.push('/login');
+        currentState.removeCurrentUser()
+        navigate('/login')
     };
 
-    const next = (answer) => {
+    const next = (answer: number) => {
         if (!currentDeck) return;
 
         if (currentIndex + 1 >= currentDeck.flashcards.length) {
-            history.push('/summary');
+            navigate('/summary');
         } else {
             setCurrentIndex(currentIndex + 1);
         }

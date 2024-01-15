@@ -10,8 +10,10 @@ type TestGeneratorContextType = {
 
 const TestGeneratorContext = createContext<TestGeneratorContextType | null>(null)
 
-export const useTestGenerator = () => {
-  return useContext(TestGeneratorContext)
+export const useTestGenerator = (): TestGeneratorContextType => {
+  const context = useContext(TestGeneratorContext)
+  if (context == null) throw new Error("Context not initialized")
+  return context
 }
 
 export const TestGeneratorProvider: FC<{ children: ReactNode }> = ({ children }) => {
@@ -31,8 +33,8 @@ export const TestGeneratorProvider: FC<{ children: ReactNode }> = ({ children })
       .filter((flashcard: Flashcard) => flashcard.type === "answer")
       .map(flashcard => flashcard.answer)
 
-    for(const [index, flashcard] of deck.flashcards.entries()) {
-      if(flashcard.type === "answer") {
+    for (const [index, flashcard] of deck.flashcards.entries()) {
+      if (flashcard.type === "answer") {
         const answers: string[] = []
         const correctAnswer: string = flashcard.answer
         answers.push(correctAnswer)
@@ -41,7 +43,7 @@ export const TestGeneratorProvider: FC<{ children: ReactNode }> = ({ children })
         allAnswers.push(correctAnswer)
         const shuffledAnswers: string[] = shuffle(answers)
         questions.push(new QuestionAnswer(index, flashcard.question, shuffledAnswers, shuffledAnswers.indexOf(correctAnswer)))
-      } else if(flashcard.type === "trueFalse") {
+      } else if (flashcard.type === "trueFalse") {
         const correctAnswer: boolean = flashcard.answer === "true"
         questions.push(new QuestionTrueFalse(index, flashcard.question, correctAnswer))
       }

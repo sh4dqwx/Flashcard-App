@@ -1,10 +1,15 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import { useNavigate } from 'react-router-dom';
+import { useCurrentState } from '../providers/CurrentStateProvider';
+import { useUserRepository } from '../providers/UserRepositoryProvider';
 
 const LoginView = () => {
     const { register, handleSubmit, formState: { errors, isValid }, setError } = useForm();
     const [isLogging, setIsLogging] = useState(false);
-
+    const navigate = useNavigate();
+    const currentState = useCurrentState();
+    const userRepository = useUserRepository();
     const forbiddenUsernames = ['root', 'bot'];
 
     const customLoginValidator = async (value: string) => {
@@ -15,8 +20,24 @@ const LoginView = () => {
 
     const onSubmit = async () => {
         setIsLogging(true);
+        const login = document.getElementById('login') as HTMLInputElement;
+        const password = document.getElementById('password') as HTMLInputElement;
 
-        setIsLogging(false);
+        console.log(login);
+        console.log(password);
+
+        userRepository.getUser(login.value, password.value).then((user) => {
+            console.log(user);
+            if (user) {
+                currentState.setCurrentUser(user);
+                setIsLogging(false);
+                navigate('/search');
+            } else {
+                alert('Niepoprawny login lub hasło');
+                setIsLogging(false);
+            }
+        });
+
     };
 
     return (
@@ -26,12 +47,12 @@ const LoginView = () => {
             </header>
             <form id="login-box" onSubmit={handleSubmit(onSubmit)}>
                 <div>
-                    <label id="login">Login</label>
+                    <label>Login</label>
                     <input type="text" id="login" {...register('loginField', { required: true })} onBlur={(e) => customLoginValidator(e.target.value)} />
                     {errors.loginField && <div>Login ma nie dozwoloną nazwę</div>}
                 </div>
                 <div>
-                    <label id="password">Hasło</label>
+                    <label>Hasło</label>
                     <input type="password" id="password" {...register('passwordField', { required: true })} />
                 </div>
                 <button id="login-btn" disabled={!isValid || isLogging}>Zaloguj</button>

@@ -1,65 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useDialog } from 'react-st-modal';
-import AddFlashcardForm from '../../modules/AddFlashcardForm';
-import EditDeckForm from '../../modules/EditDeckForm';
-import { Deck, EditDeckDTO } from '../../classes/Deck';
-import { IDeckRepository } from '../../interfaces/IDeckRepository';
-import { DeckRepositoryService } from '../../services/deck-repository/deck-repository.service';
-import { TestGeneratorService } from '../../services/test-generator/test-generator.service';
+import { useCurrentState } from '../providers/CurrentStateProvider';
+import { useDeckRepository } from '../providers/DeckRepositoryProvider';
+import { Deck, EditDeckDTO } from '../classes/Deck';
+import { Flashcard } from '../classes/Flashcard';
 
 const DeckView = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const { deckId } = useParams();
     const dialog = useDialog();
-    const [deck, setDeck] = useState(null);
+    const [deck, setDeck] = useState<Deck>();
     const [isEditDeckDialog, setIsEditDeckDialog] = useState(false);
-
-    const deckRepository = new DeckRepositoryService();
-    const testGenerator = new TestGeneratorService();
+    const currentState = useCurrentState()
+    const deckRepository = useDeckRepository()
 
     const editIcon = faPen;
     const deleteIcon = faTrash;
 
     useEffect(() => {
-        const currentUser = localStorage.getItem('currentUser');
+        const currentUser = currentState.getCurrentUser()
         if (!currentUser) {
-            history.push('/login');
+            navigate('/login');
         } else {
-            getDeck(Number(deckId));
-            setIsEditDeckDialog(false);
+            getDeck(Number(deckId))
+            setIsEditDeckDialog(false)
         }
-    }, [deckId, history]);
+    }, [deckId])
 
-    const getDeck = (id) => {
-        deckRepository.getDeck(id).then((result) => {
-            setDeck(result);
-        });
-    };
+    const getDeck = async (deckId: number) => {
+        const deck = await deckRepository.getDeck(Number(deckId))
+        setDeck(deck)
+    }
 
-    const showEditDeckDialog = () => {
-        setIsEditDeckDialog(true);
-    };
-
-    const editDeck = async (editDeckDTO) => {
+    const editDeck = async (editDeckDTO: EditDeckDTO) => {
         if (!deck) return;
         const id = deck.id;
         setIsEditDeckDialog(false);
         await deckRepository.editDeck(id, editDeckDTO);
-        getDeck(id);
-    };
+        await getDeck(id);
+    }
 
     const addFlashcard = async () => {
         if (!deck) return;
         const id = deck.id;
-        const addFlashcardDTO = await dialog(AddFlashcardForm);
-        await deckRepository.addFlashcard(id, addFlashcardDTO);
-        getDeck(id);
+        //const addFlashcardDTO = await dialog(AddFlashcardForm);
+        //await deckRepository.addFlashcard(id, addFlashcardDTO);
+        //await getDeck(id);
     };
 
-    const deleteFlashcard = async (flashcard) => {
+    const deleteFlashcard = async (flashcard: Flashcard) => {
         if (!deck) return;
         const id = deck.id;
         await deckRepository.deleteFlashcard(id, flashcard.id);
@@ -67,32 +59,30 @@ const DeckView = () => {
     };
 
     const shareDeck = () => {
-        if (!deck) return;
-        deck.isPublic = !deck.isPublic;
+        if (!deck) return
+        deck.isPublic = !deck.isPublic
     };
 
     const goToTest = () => {
-        if (deck) {
-            history.push(`/test/${deck.id}`);
-        }
+        if (!deck) return
+        navigate(`/test/${deck.id}`)
     };
 
     const goToReview = () => {
-        if (deck) {
-            history.push(`/review/${deck.id}`);
-        }
+        if (!deck) return
+        navigate(`/review/${deck.id}`)
     };
 
     const logout = () => {
-        localStorage.removeItem('currentUser');
-        history.push('/login');
+        currentState.removeCurrentUser()
+        navigate('/login')
     };
 
     return (
         <div>
             <header>
                 <h1>Kreator talii</h1>
-                <button id="back-btn" onClick={() => history.push('/search')}>
+                <button id="back-btn" onClick={() => navigate('/search')}>
                     Powrót
                 </button>
                 <button id="logout-btn" onClick={logout}>
@@ -101,7 +91,7 @@ const DeckView = () => {
             </header>
             <div id="deck-name">
                 <h2>{deck?.name}</h2>
-                <FontAwesomeIcon icon={editIcon} onClick={showEditDeckDialog} />
+                <FontAwesomeIcon icon={editIcon} onClick={() => setIsEditDeckDialog(true)} />
             </div>
             <div id="deck-container">
                 <div id="flashcard-list">
@@ -127,9 +117,9 @@ const DeckView = () => {
                 </div>
             </div>
 
-            {isEditDeckDialog && (
+            {/* {isEditDeckDialog && (
                 <EditDeckForm deckData={{ name: deck?.name || '' }} onDeckEdited={editDeck} />
-            )}
+            )} */}
         </div>
     );
 };

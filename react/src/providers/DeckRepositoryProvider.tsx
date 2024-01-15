@@ -16,45 +16,47 @@ type DeckRepositoryContextType = {
 
 const DeckRepositoryContext = createContext<DeckRepositoryContextType | null>(null)
 
-export const useDeckRepository = () => {
-  return useContext(DeckRepositoryContext)
+export const useDeckRepository = (): DeckRepositoryContextType => {
+  const context = useContext(DeckRepositoryContext)
+  if (context == null) throw new Error("Context not initialized")
+  return context
 }
 
 export const DeckRepositoryProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const apiUrl: string = environment.apiUrl
 
-  const getPrivateDecks = async (userId: number): Promise<Deck[]> =>  {
-    const response: AxiosResponse<Deck[]> = await axios.get(`${apiUrl}/private/${userId}`)
+  const getPrivateDecks = async (userId: number): Promise<Deck[]> => {
+    const response: AxiosResponse<Deck[]> = await axios.get(`${apiUrl}/decks/private/${userId}`)
     return response.data
   }
 
   const getOnlineDecks = async (): Promise<Deck[]> => {
-    const response: AxiosResponse<Deck[]> = await axios.get(`${apiUrl}/online`)
+    const response: AxiosResponse<Deck[]> = await axios.get(`${apiUrl}/decks/online`)
     return response.data
   }
 
   const getDeck = async (deckId: number): Promise<Deck> => {
-    const response: AxiosResponse<Deck> = await axios.get(`${apiUrl}/${deckId}`)
+    const response: AxiosResponse<Deck> = await axios.get(`${apiUrl}/decks/${deckId}`)
     return response.data
   }
 
   const addDeck = async (deck: Deck): Promise<void> => {
-    const response: AxiosResponse<void> = await axios.post(`${apiUrl}`, deck)
+    const response: AxiosResponse<void> = await axios.post(`${apiUrl}/decks`, deck)
     return response.data
   }
 
   const editDeck = async (deckId: number, editDeckDTO: EditDeckDTO): Promise<void> => {
-    const response: AxiosResponse<void> = await axios.put(`${apiUrl}/${deckId}`, editDeckDTO)
+    const response: AxiosResponse<void> = await axios.put(`${apiUrl}/decks/${deckId}`, editDeckDTO)
     return response.data
   }
 
   const addFlashcard = async (deckId: number, addFlashcardDTO: AddFlashcardDTO): Promise<void> => {
-    const response: AxiosResponse<void> = await axios.post(`${apiUrl}/${deckId}/flashcards`, addFlashcardDTO)
+    const response: AxiosResponse<void> = await axios.post(`${apiUrl}/decks/${deckId}/flashcards`, addFlashcardDTO)
     return response.data
   }
 
   const deleteFlashcard = async (deckId: number, flashcardId: number): Promise<void> => {
-    const response: AxiosResponse<void> = await axios.delete(`${apiUrl}/${deckId}/flashcards/${flashcardId}`)
+    const response: AxiosResponse<void> = await axios.delete(`${apiUrl}/decks/${deckId}/flashcards/${flashcardId}`)
     return response.data
   }
 

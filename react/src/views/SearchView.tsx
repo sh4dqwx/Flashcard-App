@@ -1,45 +1,49 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloud, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Deck } from '../../classes/Deck';
-import { DeckRepositoryService } from '../../services/deck-repository/deck-repository.service';
-import { User } from '../../classes/User';
-import { DeckFormComponent } from '../../modules/deck-form/deck-form.component';
+import { useCurrentState } from '../providers/CurrentStateProvider';
+import { useDeckRepository } from '../providers/DeckRepositoryProvider';
+import { Deck } from '../classes/Deck';
+import { string } from 'prop-types';
 
 const SearchView = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
     const [editIcon] = useState(faPen);
     const [deleteIcon] = useState(faTrash);
     const [publicIcon] = useState(faCloud);
-    const [privateDecks, setPrivateDecks] = useState([]);
-    const [onlineDecks, setOnlineDecks] = useState([]);
-    const [filteredPrivateDecks, setFilteredPrivateDecks] = useState([]);
-    const [filteredOnlineDecks, setFilteredOnlineDecks] = useState([]);
+    const [privateDecks, setPrivateDecks] = useState<Deck[]>([]);
+    const [onlineDecks, setOnlineDecks] = useState<Deck[]>([]);
+    const [filteredPrivateDecks, setFilteredPrivateDecks] = useState<Deck[]>([]);
+    const [filteredOnlineDecks, setFilteredOnlineDecks] = useState<Deck[]>([]);
     const [showPrivateDecks, setShowPrivateDecks] = useState(true);
 
+    const currentState = useCurrentState();
     const searchInputRef = useRef(null);
-    const deckRepository = new DeckRepositoryService();
+    const deckRepository = useDeckRepository()
 
     useEffect(() => {
-        const currentUser = localStorage.getItem('currentUser');
+        const currentUser = currentState.getCurrentUser();
         if (!currentUser) {
-            history.push('/login');
+            navigate('/login');
         } else {
-            getPrivateDecks();
-            getOnlineDecks();
+            Promise.all([
+                getPrivateDecks(),
+                getOnlineDecks()
+            ])
         }
-    }, [history]);
+    }, []);
 
     const getPrivateDecks = async () => {
-        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const user = currentState.getCurrentUser();
         if (!user) {
             return logout();
         }
 
         try {
             const deckList = await deckRepository.getPrivateDecks(user.id);
-            setPrivateDecks(deckList);
+            if (deckList && deckList.length > 0)
+                setPrivateDecks(deckList);
         } catch (error) {
             console.error(error);
         }
@@ -48,7 +52,8 @@ const SearchView = () => {
     const getOnlineDecks = async () => {
         try {
             const deckList = await deckRepository.getOnlineDecks();
-            setOnlineDecks(deckList);
+            if (deckList && deckList.length > 0)
+                setOnlineDecks(deckList);
         } catch (error) {
             console.error(error);
         }
@@ -56,7 +61,6 @@ const SearchView = () => {
 
     const onlineToggle = () => {
         setShowPrivateDecks(!showPrivateDecks);
-        searchInputRef.current.value = '';
         setFilteredOnlineDecks(onlineDecks);
     };
 
@@ -64,7 +68,7 @@ const SearchView = () => {
         const result = prompt('Podaj nazwę talii:');
         if (!result) return;
 
-        const user = JSON.parse(localStorage.getItem('currentUser'));
+        const user = currentState.getCurrentUser();
         if (!user) return logout();
 
         const deck = {
@@ -83,13 +87,13 @@ const SearchView = () => {
         }
     };
 
-    const editDeck = (deck) => {
-        history.push(`/deck/${deck.id}`);
+    const editDeck = (deck: Deck) => {
+        navigate(`/deck/${deck.id}`);
     };
 
     const logout = () => {
-        localStorage.removeItem('currentUser');
-        history.push('/login');
+        currentState.removeCurrentUser();
+        navigate('/login');
     };
 
     return (
@@ -120,8 +124,10 @@ const SearchView = () => {
                     className="deck-list"
                 >
                     {privateDecks
-                        .filter((deck) =>
-                            deck.name.toUpperCase().includes(searchInputRef.current.value.toUpperCase())
+                        .filter((deck) => {
+                            const searchValue: string = searchInputRef.current || "";
+                            return deck.name.toUpperCase().includes(searchValue.toUpperCase());
+                        }
                         )
                         .map((deck) => (
                             <div
@@ -149,9 +155,10 @@ const SearchView = () => {
                     className="deck-list"
                 >
                     {onlineDecks
-                        .filter((deck) =>
-                            deck.name.toUpperCase().includes(searchInputRef.current.value.toUpperCase())
-                        )
+                        .filter((deck) => {
+                            const searchValue: string = searchInputRef.current || "";
+                            return deck.name.toUpperCase().includes(searchValue.toUpperCase());
+                        })
                         .map((deck) => (
                             <div
                                 key={deck.id}

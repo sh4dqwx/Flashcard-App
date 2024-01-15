@@ -1,19 +1,21 @@
 import React, { useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+import { useCurrentState } from '../providers/CurrentStateProvider';
 
 const SummaryView = () => {
-    const history = useHistory();
+    const navigate = useNavigate();
+    const currentState = useCurrentState();
 
     useEffect(() => {
-        const currentUser = localStorage.getItem('currentUser');
+        const currentUser = currentState.getCurrentUser();
         if (!currentUser) {
             logout();
         }
     }, []);
 
     const logout = () => {
-        localStorage.removeItem('currentUser');
-        history.push('/login');
+        currentState.removeCurrentUser();
+        navigate('/login');
     };
 
     return (
@@ -33,7 +35,7 @@ const SummaryView = () => {
                 </p>
             </div>
             <div id="summary-options">
-                <button onClick={() => history.push('/deck-creator')}>Powrót</button>
+                <button onClick={() => navigate('/deck-creator')}>Powrót</button>
             </div>
         </div>
     );

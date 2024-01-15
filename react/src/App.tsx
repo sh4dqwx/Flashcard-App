@@ -9,24 +9,34 @@ import ReviewView from './views/ReviewView';
 import TestView from './views/TestView';
 import SummaryView from './views/SummaryView';
 import ErrorView from './views/ErrorView';
+import { CurrentStateProvider } from './providers/CurrentStateProvider';
+import { DeckRepositoryProvider } from './providers/DeckRepositoryProvider';
+import { UserRepositoryProvider } from './providers/UserRepositoryProvider';
+import { TestGeneratorProvider } from './providers/TestGeneratorProvider';
 
 function App() {
   return (
-    <div>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
-          <Route path="/login" element={<LoginView />} />
-          <Route path="/search" element={<SearchView />} />
-          <Route path="/deck" element={<DeckView />} />
-          <Route path="/review" element={<ReviewView />} />
-          <Route path="/test" element={<TestView />} />
-          <Route path="/summary" element={<SummaryView />} />
-          <Route path="/error" element={<ErrorView />} />
-          <Route path="*" element={<Navigate to="/error" replace />} />
-        </Routes>
-      </Router>
-    </div>
+    <CurrentStateProvider>
+      <DeckRepositoryProvider>
+        <UserRepositoryProvider>
+          <TestGeneratorProvider>
+            <Router>
+              <Routes>
+                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/login" element={<LoginView />} />
+                <Route path="/search" element={<SearchView />} />
+                <Route path="/deck" element={<DeckView />} />
+                <Route path="/review" element={<ReviewView />} />
+                <Route path="/test" element={<TestView />} />
+                <Route path="/summary" element={<SummaryView />} />
+                <Route path="/error" element={<ErrorView />} />
+                <Route path="*" element={<Navigate to="/error" replace />} />
+              </Routes>
+            </Router>
+          </TestGeneratorProvider>
+        </UserRepositoryProvider>
+      </DeckRepositoryProvider>
+    </CurrentStateProvider>
   );
 }
 

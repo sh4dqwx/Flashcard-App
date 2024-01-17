@@ -4,6 +4,8 @@ import { useDeckRepository } from '../providers/DeckRepositoryProvider';
 import { useTestGenerator } from '../providers/TestGeneratorProvider';
 import { useCurrentState } from '../providers/CurrentStateProvider';
 import { Deck } from '../classes/Deck';
+import LogoutComponent from '../components/LogoutComponent';
+import TitleComponent from '../components/TitleComponent';
 
 const ReviewView = () => {
     const navigate = useNavigate();
@@ -45,11 +47,41 @@ const ReviewView = () => {
 
     return (
         <div>
+            <style>
+                {`
+                    header {
+                        position: relative;
+                        text-align: center;
+                      }
+                      
+                      #logout-btn {
+                        position: absolute;
+                        top: 0px;
+                        right: 10px;
+                      }
+                      
+                      #review-flashcard {
+                        display: flex;
+                        flex-direction: column;
+                        margin: 50px auto;
+                        height: 70vh;
+                        width: 60vw;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 10px;
+                        border: 2px solid;
+                      }
+                      
+                      #review-options {
+                        display: flex;
+                        justify-content: center;
+                        gap: 10px;
+                      }
+                `}
+            </style>
             <header>
-                <h1>Powtórka</h1>
-                <button id="logout-btn" onClick={logout}>
-                    Wyloguj
-                </button>
+                <TitleComponent title='Powtórka' />
+                <LogoutComponent onClick={logout} />
             </header>
             <div id="review-flashcard">
                 <h2>{currentDeck?.flashcards[currentIndex].question}</h2>

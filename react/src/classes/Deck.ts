@@ -10,6 +10,10 @@ export type Deck = {
   //tests: Test[]
 }
 
+export type AddDeckDTO = {
+  name: string
+}
+
 export type EditDeckDTO = {
   name: string
 }

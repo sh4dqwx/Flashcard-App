@@ -4,6 +4,8 @@ import { useCurrentState } from '../providers/CurrentStateProvider';
 import { Deck } from '../classes/Deck';
 import { useTestGenerator } from '../providers/TestGeneratorProvider';
 import { useDeckRepository } from '../providers/DeckRepositoryProvider';
+import LogoutComponent from '../components/LogoutComponent';
+import TitleComponent from '../components/TitleComponent';
 
 const TestView = () => {
     const navigate = useNavigate();
@@ -65,11 +67,42 @@ const TestView = () => {
 
     return (
         <div>
+            <style>
+                {`
+                    header {
+                        position: relative;
+                        text-align: center;
+                    }
+                    
+                    #logout-btn {
+                        position: absolute;
+                        top: 0px;
+                        right: 10px;
+                    }
+                    
+                    #test-flashcard {
+                        display: flex;
+                        flex-direction: column;
+                        margin: 50px auto;
+                        height: 40vh;
+                        width: 60vw;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 10px;
+                        border: 2px solid;
+                    }
+                    
+                    #options-row {
+                        display: flex;
+                        justify-content: center;
+                        gap: 20px;
+                        padding: 10px;
+                    }
+                `}
+            </style>
             <header>
-                <h1>Test</h1>
-                <button id="logout-btn" onClick={logout}>
-                    Wyloguj
-                </button>
+                <TitleComponent title='Test' />
+                <LogoutComponent onClick={logout} />
             </header>
             <div id="test-flashcard">
                 <h2>{currentDeck?.flashcards[currentIndex].question}</h2>

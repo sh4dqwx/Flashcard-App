@@ -5,13 +5,21 @@ import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useCurrentState } from '../providers/CurrentStateProvider';
 import { useDeckRepository } from '../providers/DeckRepositoryProvider';
 import { Deck, EditDeckDTO } from '../classes/Deck';
-import { Flashcard } from '../classes/Flashcard';
+import { AddFlashcardDTO, Flashcard } from '../classes/Flashcard';
+import { EditDeckDialog } from '../modules/EditDeckDialog';
+import { AddFlashcardDialog } from '../modules/AddFlashcardDialog';
+import LogoutComponent from '../components/LogoutComponent';
+import TitleComponent from '../components/TitleComponent';
+import ReturnComponent from '../components/ReturnComponent';
 
 const DeckView = () => {
     const navigate = useNavigate();
     const { deckId } = useParams();
+
     const [deck, setDeck] = useState<Deck>()
-    const [isEditDeckDialog, setIsEditDeckDialog] = useState<boolean>()
+    const [isAddFlashcardDialog, setIsAddFlashcardDialog] = useState<boolean>(false)
+    const [isEditDeckDialog, setIsEditDeckDialog] = useState<boolean>(false)
+
     const currentState = useCurrentState()
     const deckRepository = useDeckRepository()
 
@@ -32,17 +40,17 @@ const DeckView = () => {
     const editDeck = async (editDeckDTO: EditDeckDTO) => {
         if (!deck) return;
         const id = deck.id;
-        setIsEditDeckDialog(false)
         await deckRepository.editDeck(id, editDeckDTO);
+        setIsEditDeckDialog(false)
         await getDeck(id);
     }
 
-    const addFlashcard = async () => {
+    const addFlashcard = async (data: AddFlashcardDTO) => {
         if (!deck) return;
         const id = deck.id;
-        //const addFlashcardDTO = await dialog(AddFlashcardForm);
-        //await deckRepository.addFlashcard(id, addFlashcardDTO);
-        //await getDeck(id);
+        await deckRepository.addFlashcard(id, data);
+        setIsAddFlashcardDialog(false)
+        await getDeck(id);
     };
 
     const deleteFlashcard = async (flashcard: Flashcard) => {
@@ -53,10 +61,12 @@ const DeckView = () => {
     };
 
     const shareDeck = () => {
+        if (!deck) return
         setDeck((prevDeck: Deck | undefined) => {
-            if(!prevDeck) return
+            if (!prevDeck) return
             return { ...prevDeck, isPublic: !prevDeck.isPublic }
         })
+        deckRepository.makeDeckPublic(deck.id)
     };
 
     const goToTest = () => {
@@ -76,14 +86,96 @@ const DeckView = () => {
 
     return (
         <div>
+            <style>
+                {`
+                    #deck-name,
+                    #deck-container,
+                    #deck-options,
+                    .flashcard,
+                    .question,
+                    .answer {
+                        display: flex;
+                    }
+                    
+                    header {
+                        position: relative;
+                        text-align: center;
+                    }
+                    
+                    #return-btn {
+                        position: absolute;
+                        top: 0px;
+                        left: 10px;
+                    }
+                    
+                    #logout-btn {
+                        position: absolute;
+                        top: 0px;
+                        right: 10px;
+                    }
+                    
+                    #deck-name,
+                    #deck-container {
+                        margin: 10px;
+                    }
+                    
+                    #deck-name {
+                        align-items: center;
+                        gap: 10px;
+                    }
+                    
+                    #deck-container {
+                        height: 75vh;
+                    }
+                    
+                    #flashcard-list {
+                        flex: 3;
+                        border: 2px solid;
+                        overflow-y: auto;
+                    }
+                    
+                    #deck-options {
+                        flex: 1;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 10px;
+                    }
+                    
+                    #add-flashcard-btn {
+                        margin-bottom: 30px;
+                    }
+                    
+                    .flashcard {
+                        position: relative;
+                        align-items: center;
+                        margin: 10px;
+                        background-color: gray;
+                        height: 20%;
+                    }
+                    
+                    .question,
+                    .answer {
+                        flex: 2;
+                        height: 100%;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                    
+                    .question {
+                        border-right: 2px solid #000;
+                    }
+                    
+                    .delete-flashcard-btn {
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                    }
+                `}
+            </style>
             <header>
-                <h1>Kreator talii</h1>
-                <button id="back-btn" onClick={() => navigate('/search')}>
-                    Powrót
-                </button>
-                <button id="logout-btn" onClick={logout}>
-                    Wyloguj
-                </button>
+                <TitleComponent title='Kreator talii' />
+                <ReturnComponent onClick={() => navigate('/search')} />
+                <LogoutComponent onClick={logout} />
             </header>
             <div id="deck-name">
                 <h2>{deck?.name}</h2>
@@ -104,18 +196,25 @@ const DeckView = () => {
                     ))}
                 </div>
                 <div id="deck-options">
-                    <button id="add-flashcard-btn" onClick={addFlashcard}>
-                        Dodaj
-                    </button>
+                    <button id="add-flashcard-btn" onClick={() => setIsAddFlashcardDialog(true)}>Dodaj</button>
                     <button onClick={goToReview}>Powtórka</button>
                     <button onClick={goToTest}>Test</button>
                     <button onClick={shareDeck}>Udostępnij</button>
                 </div>
             </div>
 
-            {/* {isEditDeckDialog && (
-                <EditDeckForm deckData={{ name: deck?.name || '' }} onDeckEdited={editDeck} />
-            )} */}
+            <AddFlashcardDialog
+                open={isAddFlashcardDialog}
+                onSubmit={addFlashcard}
+                onCancel={() => setIsAddFlashcardDialog(false)}
+            />
+
+            <EditDeckDialog
+                open={isEditDeckDialog}
+                prevData={{ name: deck?.name ?? "" }}
+                onSubmit={editDeck}
+                onCancel={() => setIsEditDeckDialog(false)}
+            />
         </div>
     );
 };

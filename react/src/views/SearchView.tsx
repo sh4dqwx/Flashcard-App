@@ -1,32 +1,37 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCloud, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useCurrentState } from '../providers/CurrentStateProvider';
 import { useDeckRepository } from '../providers/DeckRepositoryProvider';
-import { Deck } from '../classes/Deck';
+import { AddDeckDTO, Deck } from '../classes/Deck';
+import { AddDeckDialog } from '../modules/AddDeckDialog';
 import { object, string } from 'prop-types';
-
-type SearchViewState = {
-    privateDecks: Deck[],
-    onlineDecks: Deck[],
-    filteredPrivateDecks: Deck[],
-    filteredOnlineDecks: Deck[],
-    showPrivateDecks: boolean,
-    isAddDeckDialog: boolean
-}
+import LogoutComponent from '../components/LogoutComponent';
+import TitleComponent from '../components/TitleComponent';
 
 const SearchView = () => {
     const navigate = useNavigate();
+
     const [privateDecks, setPrivateDecks] = useState<Deck[]>([]);
     const [onlineDecks, setOnlineDecks] = useState<Deck[]>([]);
-    const [filteredPrivateDecks, setFilteredPrivateDecks] = useState<Deck[]>([]);
-    const [filteredOnlineDecks, setFilteredOnlineDecks] = useState<Deck[]>([]);
     const [showPrivateDecks, setShowPrivateDecks] = useState(true);
-    const [state, setState] = useState<SearchViewState>();
+    const [isAddDeckDialog, setIsAddDeckDialog] = useState(false)
+    const [query, setQuery] = useState<string>("")
+
+    const filteredPrivateDecks = useMemo(() => {
+        return privateDecks.filter((deck: Deck) => {
+            return deck.name.toLowerCase().includes(query.toLowerCase())
+        })
+    }, [privateDecks, query]);
+
+    const filteredOnlineDecks = useMemo(() => {
+        return onlineDecks.filter((deck: Deck) => {
+            return deck.name.toLowerCase().includes(query.toLowerCase())
+        })
+    }, [onlineDecks, query]);
 
     const currentState = useCurrentState();
-    const searchInputRef = useRef(null);
     const deckRepository = useDeckRepository()
 
     useEffect(() => {
@@ -47,6 +52,7 @@ const SearchView = () => {
 
         try {
             const deckList = await deckRepository.getPrivateDecks(user.id);
+            console.log(deckList);
             if (deckList && deckList.length > 0)
                 setPrivateDecks(deckList);
         } catch (error) {
@@ -55,8 +61,12 @@ const SearchView = () => {
     };
 
     const getOnlineDecks = async () => {
+        const user = currentState.getCurrentUser();
+        if (!user) return logout();
+
         try {
-            const deckList = await deckRepository.getOnlineDecks();
+            const deckList = await deckRepository.getOnlineDecks(user.id);
+            console.log(deckList);
             if (deckList && deckList.length > 0)
                 setOnlineDecks(deckList);
         } catch (error) {
@@ -66,19 +76,15 @@ const SearchView = () => {
 
     const onlineToggle = () => {
         setShowPrivateDecks(!showPrivateDecks);
-        setFilteredOnlineDecks(onlineDecks);
     };
 
-    const addDeck = async () => {
-        const result = prompt('Podaj nazwę talii:');
-        if (!result) return;
-
+    const addDeck = async (data: AddDeckDTO) => {
         const user = currentState.getCurrentUser();
         if (!user) return logout();
 
         const deck = {
             id: 0,
-            name: result,
+            name: data.name,
             flashcards: [],
             author: user,
             isPublic: false,
@@ -86,6 +92,7 @@ const SearchView = () => {
 
         try {
             await deckRepository.addDeck(deck);
+            setIsAddDeckDialog(false)
             getPrivateDecks();
         } catch (error) {
             console.error(error);
@@ -96,6 +103,15 @@ const SearchView = () => {
         navigate(`/deck/${deck.id}`);
     };
 
+    const deleteDeck = async (deck: Deck) => {
+        try {
+            await deckRepository.deleteDeck(deck.id)
+            getPrivateDecks();
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
     const logout = () => {
         currentState.removeCurrentUser();
         navigate('/login');
@@ -103,15 +119,74 @@ const SearchView = () => {
 
     return (
         <div>
+            <style>
+                {`
+                    #deck-options,
+                    .deck {
+                        display: flex;
+                    }
+                    
+                    header {
+                        position: relative;
+                        text-align: center;
+                    }
+                    
+                    #return-btn {
+                        position: absolute;
+                        top: 0px;
+                        left: 10px;
+                    }
+                    
+                    #logout-btn {
+                        position: absolute;
+                        top: 0px;
+                        right: 10px;
+                    }
+                    
+                    #deck-container {
+                        height: 75vh;
+                        margin: 10px;
+                    }
+                    
+                    .deck-list {
+                        height: 100%;
+                        border: 2px solid;
+                        overflow-y: auto;
+                    }
+                    
+                    #deck-options {
+                        justify-content: center;
+                    }
+                    
+                    .deck {
+                        position: relative;
+                        align-items: center;
+                        margin: 10px;
+                        padding: 0px 10px;
+                        background-color: gray;
+                        height: 20%;
+                    }
+                    
+                    .delete-deck-btn {
+                        position: absolute;
+                        top: 15px;
+                        right: 15px;
+                    }
+                    
+                    .is-deck-public {
+                        position: absolute;
+                        bottom: 15px;
+                        right: 15px;
+                    }
+                `}
+            </style>
             <header>
-                <h1>Wyszukiwarka talii</h1>
-                <button id="logout-btn" onClick={logout}>Wyloguj</button>
+                <TitleComponent title='Wyszukiwarka talii' />
+                <LogoutComponent onClick={logout} />
             </header>
             <div id="deck-options">
-                <input type="text" placeholder="Wyszukaj talie" ref={searchInputRef} />
-                <button id="add-deck-btn" onClick={addDeck}>
-                    Dodaj
-                </button>
+                <input value={query} type="text" placeholder="Wyszukaj talie" onChange={(e) => setQuery(e.target.value)} />
+                <button id="add-deck-btn" onClick={() => setIsAddDeckDialog(true)}>Dodaj</button>
                 <button id="online-decks-btn" onClick={onlineToggle}>
                     <span>{showPrivateDecks ? 'Online' : 'Prywatne'}</span>
                 </button>
@@ -122,12 +197,7 @@ const SearchView = () => {
                     id="private-deck-list"
                     className="deck-list"
                 >
-                    {privateDecks
-                        .filter((deck) => {
-                            const searchValue: string = (searchInputRef.current as HTMLInputElement | null)?.value || "";
-                            return deck.name.toUpperCase().includes(searchValue);
-                        }
-                        )
+                    {filteredPrivateDecks
                         .map((deck) => (
                             <div
                                 key={deck.id}
@@ -138,6 +208,7 @@ const SearchView = () => {
                                 <FontAwesomeIcon
                                     className="delete-deck-btn"
                                     icon={faTrash}
+                                    onClick={(e) => { e.stopPropagation(); deleteDeck(deck) }}
                                 />
                                 {deck.isPublic && (
                                     <FontAwesomeIcon
@@ -153,11 +224,7 @@ const SearchView = () => {
                     id="online-deck-list"
                     className="deck-list"
                 >
-                    {onlineDecks
-                        .filter((deck) => {
-                            const searchValue: string = (searchInputRef.current as HTMLInputElement | null)?.value || "";
-                            return deck.name.toUpperCase().includes(searchValue);
-                        })
+                    {filteredOnlineDecks
                         .map((deck) => (
                             <div
                                 key={deck.id}
@@ -165,10 +232,6 @@ const SearchView = () => {
                                 onClick={() => editDeck(deck)}
                             >
                                 <div className="name">{deck.name.toUpperCase()}</div>
-                                <FontAwesomeIcon
-                                    className="delete-deck-btn"
-                                    icon={faTrash}
-                                />
                                 {deck.isPublic && (
                                     <FontAwesomeIcon
                                         className="is-deck-public"
@@ -179,6 +242,8 @@ const SearchView = () => {
                         ))}
                 </div>
             </div>
+
+            <AddDeckDialog open={isAddDeckDialog} onSubmit={addDeck} onCancel={() => setIsAddDeckDialog(false)} />
         </div>
     );
 };

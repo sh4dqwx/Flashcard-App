@@ -12,26 +12,34 @@ app.use(express.json())
 
 app.post("/users", (req: Request, res: Response) => {
   const userData: { login: string, password: string } = req.body
-  res.send(users.find((user: User) => user.login == userData.login && user.password == userData.password))
+  res.status(200).send(users.find((user: User) => user.login == userData.login && user.password == userData.password))
 })
 
 app.get("/users/:id", (req: Request, res: Response) => {
   const userId: number = parseInt(req.params.id)
-  res.send(users.find((user: User) => user.id === userId))
+  res.status(200).send(users.find((user: User) => user.id === userId))
 })
 
 app.get("/decks/:id", (req: Request, res: Response) => {
   const deckId: number = parseInt(req.params.id)
-  res.send(decks.find((deck: Deck) => deck.id === deckId))
+  res.status(200).send(decks.find((deck: Deck) => deck.id === deckId))
 })
 
-app.get("/decks/online", (req: Request, res: Response) => {
-  res.send(decks.filter((deck: Deck) => deck.isPublic === true))
+app.get("/decks/online/:userId", (req: Request, res: Response) => {
+  const userId: number = parseInt(req.params.userId)
+  res.status(200).send(decks.filter((deck: Deck) => deck.isPublic));
 })
 
 app.get("/decks/private/:userId", (req: Request, res: Response) => {
   const userId: number = parseInt(req.params.userId)
   res.status(200).send(decks.filter((deck: Deck) => deck.author.id === userId))
+})
+
+app.put("/decks/share/:id", (req: Request, res: Response) => {
+  const deckId: number = parseInt(req.params.id)
+  const deckIndex: number = decks.findIndex((deck: Deck) => deck.id === deckId)
+  decks[deckIndex].isPublic = !decks[deckIndex].isPublic
+  res.status(204).send()
 })
 
 app.post("/decks", (req: Request, res: Response) => {
@@ -51,7 +59,9 @@ app.put("/decks/:id", (req: Request, res: Response) => {
 
 app.delete("/decks/:id", (req: Request, res: Response) => {
   const deckId: number = parseInt(req.params.id)
-  // do zrobienia
+  const indexToDelete: number = decks.findIndex((deck: Deck) => deck.id === deckId)
+  decks.splice(indexToDelete, 1)
+  res.status(204).send()
 })
 
 app.post("/decks/:deckId/flashcards", (req: Request, res: Response) => {

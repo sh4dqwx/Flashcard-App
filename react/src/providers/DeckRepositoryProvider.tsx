@@ -6,10 +6,12 @@ import { environment } from "../environments/environment";
 
 type DeckRepositoryContextType = {
   getPrivateDecks: (userId: number) => Promise<Deck[]>,
-  getOnlineDecks: () => Promise<Deck[]>,
+  getOnlineDecks: (userId: number) => Promise<Deck[]>,
   getDeck: (deckId: number) => Promise<Deck>,
   addDeck: (deck: Deck) => Promise<void>,
   editDeck: (deckId: number, editDeckDTO: EditDeckDTO) => Promise<void>,
+  deleteDeck: (deckId: number) => Promise<void>,
+  makeDeckPublic: (deckId: number) => Promise<void>,
   addFlashcard: (deckId: number, addFlashcardDTO: AddFlashcardDTO) => Promise<void>,
   deleteFlashcard: (deckId: number, flashcardId: number) => Promise<void>,
 }
@@ -30,8 +32,10 @@ export const DeckRepositoryProvider: FC<{ children: ReactNode }> = ({ children }
     return response.data
   }
 
-  const getOnlineDecks = async (): Promise<Deck[]> => {
-    const response: AxiosResponse<Deck[]> = await axios.get(`${apiUrl}/decks/online`)
+  const getOnlineDecks = async (userId: number): Promise<Deck[]> => {
+    console.log("dupa")
+    const response: AxiosResponse<Deck[]> = await axios.get(`${apiUrl}/decks/online/${userId}`)
+    console.log(response)
     return response.data
   }
 
@@ -47,6 +51,16 @@ export const DeckRepositoryProvider: FC<{ children: ReactNode }> = ({ children }
 
   const editDeck = async (deckId: number, editDeckDTO: EditDeckDTO): Promise<void> => {
     const response: AxiosResponse<void> = await axios.put(`${apiUrl}/decks/${deckId}`, editDeckDTO)
+    return response.data
+  }
+
+  const deleteDeck = async (deckId: number): Promise<void> => {
+    const response: AxiosResponse<void> = await axios.delete(`${apiUrl}/decks/${deckId}`)
+    return response.data
+  }
+
+  const makeDeckPublic = async (deckId: number): Promise<void> => {
+    const response: AxiosResponse<void> = await axios.put(`${apiUrl}/decks/share/${deckId}`)
     return response.data
   }
 
@@ -67,6 +81,8 @@ export const DeckRepositoryProvider: FC<{ children: ReactNode }> = ({ children }
       getDeck: getDeck,
       addDeck: addDeck,
       editDeck: editDeck,
+      deleteDeck: deleteDeck,
+      makeDeckPublic: makeDeckPublic,
       addFlashcard: addFlashcard,
       deleteFlashcard: deleteFlashcard
     }}>

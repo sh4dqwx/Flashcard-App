@@ -7,16 +7,23 @@ import { useDeckRepository } from '../providers/DeckRepositoryProvider';
 import { Deck } from '../classes/Deck';
 import { string } from 'prop-types';
 
+type SearchViewState = {
+    privateDecks: Deck[],
+    onlineDecks: Deck[],
+    filteredPrivateDecks: Deck[],
+    filteredOnlineDecks: Deck[],
+    showPrivateDecks: boolean,
+    isAddDeckDialog: boolean
+}
+
 const SearchView = () => {
     const navigate = useNavigate();
-    const [editIcon] = useState(faPen);
-    const [deleteIcon] = useState(faTrash);
-    const [publicIcon] = useState(faCloud);
     const [privateDecks, setPrivateDecks] = useState<Deck[]>([]);
     const [onlineDecks, setOnlineDecks] = useState<Deck[]>([]);
     const [filteredPrivateDecks, setFilteredPrivateDecks] = useState<Deck[]>([]);
     const [filteredOnlineDecks, setFilteredOnlineDecks] = useState<Deck[]>([]);
     const [showPrivateDecks, setShowPrivateDecks] = useState(true);
+    const [state, setState] = useState<SearchViewState>();
 
     const currentState = useCurrentState();
     const searchInputRef = useRef(null);
@@ -36,9 +43,7 @@ const SearchView = () => {
 
     const getPrivateDecks = async () => {
         const user = currentState.getCurrentUser();
-        if (!user) {
-            return logout();
-        }
+        if (!user) return logout();
 
         try {
             const deckList = await deckRepository.getPrivateDecks(user.id);
@@ -100,16 +105,10 @@ const SearchView = () => {
         <div>
             <header>
                 <h1>Wyszukiwarka talii</h1>
-                <button id="logout-btn" onClick={logout}>
-                    Wyloguj
-                </button>
+                <button id="logout-btn" onClick={logout}>Wyloguj</button>
             </header>
             <div id="deck-options">
-                <input
-                    type="text"
-                    placeholder="Wyszukaj talie"
-                    ref={searchInputRef}
-                />
+                <input type="text" placeholder="Wyszukaj talie" ref={searchInputRef} />
                 <button id="add-deck-btn" onClick={addDeck}>
                     Dodaj
                 </button>
@@ -125,8 +124,8 @@ const SearchView = () => {
                 >
                     {privateDecks
                         .filter((deck) => {
-                            const searchValue: string = searchInputRef.current || "";
-                            return deck.name.toUpperCase().includes(searchValue.toUpperCase());
+                            if (searchInputRef.current == null) return deck;
+                            else return deck.name.toUpperCase().includes(searchInputRef.current.value.toUpperCase());
                         }
                         )
                         .map((deck) => (
@@ -138,12 +137,12 @@ const SearchView = () => {
                                 <div className="name">{deck.name.toUpperCase()}</div>
                                 <FontAwesomeIcon
                                     className="delete-deck-btn"
-                                    icon={deleteIcon}
+                                    icon={faTrash}
                                 />
                                 {deck.isPublic && (
                                     <FontAwesomeIcon
                                         className="is-deck-public"
-                                        icon={publicIcon}
+                                        icon={faCloud}
                                     />
                                 )}
                             </div>
@@ -156,8 +155,8 @@ const SearchView = () => {
                 >
                     {onlineDecks
                         .filter((deck) => {
-                            const searchValue: string = searchInputRef.current || "";
-                            return deck.name.toUpperCase().includes(searchValue.toUpperCase());
+                            if (searchInputRef.current == null) return deck;
+                            else return deck.name.toUpperCase().includes(searchInputRef.current.value.toUpperCase());
                         })
                         .map((deck) => (
                             <div
@@ -168,12 +167,12 @@ const SearchView = () => {
                                 <div className="name">{deck.name.toUpperCase()}</div>
                                 <FontAwesomeIcon
                                     className="delete-deck-btn"
-                                    icon={deleteIcon}
+                                    icon={faTrash}
                                 />
                                 {deck.isPublic && (
                                     <FontAwesomeIcon
                                         className="is-deck-public"
-                                        icon={publicIcon}
+                                        icon={faCloud}
                                     />
                                 )}
                             </div>

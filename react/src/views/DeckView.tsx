@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { useDialog } from 'react-st-modal';
 import { useCurrentState } from '../providers/CurrentStateProvider';
 import { useDeckRepository } from '../providers/DeckRepositoryProvider';
 import { Deck, EditDeckDTO } from '../classes/Deck';
@@ -11,14 +10,10 @@ import { Flashcard } from '../classes/Flashcard';
 const DeckView = () => {
     const navigate = useNavigate();
     const { deckId } = useParams();
-    const dialog = useDialog();
-    const [deck, setDeck] = useState<Deck>();
-    const [isEditDeckDialog, setIsEditDeckDialog] = useState(false);
+    const [deck, setDeck] = useState<Deck>()
+    const [isEditDeckDialog, setIsEditDeckDialog] = useState<boolean>()
     const currentState = useCurrentState()
     const deckRepository = useDeckRepository()
-
-    const editIcon = faPen;
-    const deleteIcon = faTrash;
 
     useEffect(() => {
         const currentUser = currentState.getCurrentUser()
@@ -26,7 +21,6 @@ const DeckView = () => {
             navigate('/login');
         } else {
             getDeck(Number(deckId))
-            setIsEditDeckDialog(false)
         }
     }, [deckId])
 
@@ -38,7 +32,7 @@ const DeckView = () => {
     const editDeck = async (editDeckDTO: EditDeckDTO) => {
         if (!deck) return;
         const id = deck.id;
-        setIsEditDeckDialog(false);
+        setIsEditDeckDialog(false)
         await deckRepository.editDeck(id, editDeckDTO);
         await getDeck(id);
     }
@@ -59,8 +53,10 @@ const DeckView = () => {
     };
 
     const shareDeck = () => {
-        if (!deck) return
-        deck.isPublic = !deck.isPublic
+        setDeck((prevDeck: Deck | undefined) => {
+            if(!prevDeck) return
+            return { ...prevDeck, isPublic: !prevDeck.isPublic }
+        })
     };
 
     const goToTest = () => {
@@ -91,7 +87,7 @@ const DeckView = () => {
             </header>
             <div id="deck-name">
                 <h2>{deck?.name}</h2>
-                <FontAwesomeIcon icon={editIcon} onClick={() => setIsEditDeckDialog(true)} />
+                <FontAwesomeIcon icon={faPen} onClick={() => setIsEditDeckDialog(true)} />
             </div>
             <div id="deck-container">
                 <div id="flashcard-list">
@@ -101,7 +97,7 @@ const DeckView = () => {
                             <div className="answer">{flashcard.answer}</div>
                             <FontAwesomeIcon
                                 className="delete-flashcard-btn"
-                                icon={deleteIcon}
+                                icon={faTrash}
                                 onClick={() => deleteFlashcard(flashcard)}
                             />
                         </div>

@@ -5,7 +5,7 @@ import { faCloud, faPen, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { useCurrentState } from '../providers/CurrentStateProvider';
 import { useDeckRepository } from '../providers/DeckRepositoryProvider';
 import { Deck } from '../classes/Deck';
-import { string } from 'prop-types';
+import { object, string } from 'prop-types';
 
 type SearchViewState = {
     privateDecks: Deck[],
@@ -124,8 +124,8 @@ const SearchView = () => {
                 >
                     {privateDecks
                         .filter((deck) => {
-                            if (searchInputRef.current == null) return deck;
-                            else return deck.name.toUpperCase().includes(searchInputRef.current.value.toUpperCase());
+                            const searchValue: string = (searchInputRef.current as HTMLInputElement | null)?.value || "";
+                            return deck.name.toUpperCase().includes(searchValue);
                         }
                         )
                         .map((deck) => (
@@ -155,8 +155,8 @@ const SearchView = () => {
                 >
                     {onlineDecks
                         .filter((deck) => {
-                            if (searchInputRef.current == null) return deck;
-                            else return deck.name.toUpperCase().includes(searchInputRef.current.value.toUpperCase());
+                            const searchValue: string = (searchInputRef.current as HTMLInputElement | null)?.value || "";
+                            return deck.name.toUpperCase().includes(searchValue);
                         })
                         .map((deck) => (
                             <div

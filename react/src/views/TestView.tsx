@@ -56,7 +56,7 @@ const TestView = () => {
         if (!currentDeck) return;
 
         if (currentIndex + 1 >= currentDeck.flashcards.length) {
-            navigate('/summary');
+            navigate(`/summary/${deckId}`);
         } else {
             setCurrentIndex(currentIndex + 1);
             setRandomIndices(currentDeck);

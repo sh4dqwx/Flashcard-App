@@ -25,10 +25,10 @@ function App() {
                 <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="/login" element={<LoginView />} />
                 <Route path="/search" element={<SearchView />} />
-                <Route path="/deck" element={<DeckView />} />
-                <Route path="/review" element={<ReviewView />} />
-                <Route path="/test" element={<TestView />} />
-                <Route path="/summary" element={<SummaryView />} />
+                <Route path="/deck/:deckId" element={<DeckView />} />
+                <Route path="/review/:deckId" element={<ReviewView />} />
+                <Route path="/test/:deckId" element={<TestView />} />
+                <Route path="/summary/:deckId" element={<SummaryView />} />
                 <Route path="/error" element={<ErrorView />} />
                 <Route path="*" element={<Navigate to="/error" replace />} />
               </Routes>

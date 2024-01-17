@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useCurrentState } from '../providers/CurrentStateProvider';
 
 const SummaryView = () => {
     const navigate = useNavigate();
+    const { deckId } = useParams();
     const currentState = useCurrentState();
 
     useEffect(() => {
@@ -35,7 +36,7 @@ const SummaryView = () => {
                 </p>
             </div>
             <div id="summary-options">
-                <button onClick={() => navigate('/deck-creator')}>Powrót</button>
+                <button onClick={() => navigate(`/deck/${deckId}`)}>Powrót</button>
             </div>
         </div>
     );
